@@ -5,7 +5,6 @@
       style="z-index: 10"
       active-color="#07c160"
       inactive-color="#000"
-      @onChange="handleTabbarChanged"
     >
       <tabbar-item icon="home-o">课表</tabbar-item>
       <tabbar-item icon="setting-o">我的</tabbar-item>
@@ -39,7 +38,7 @@
           <cell title="同步课表" is-link />
         </cell-group>
         <cell-group title="状态">
-          <cell title="登出" is-link />
+          <cell title="登出" is-link @click="handleLogout" />
         </cell-group>
       </div>
     </div>
@@ -75,7 +74,10 @@ export default {
     active: 0,
   }),
   methods: {
-    handleTabbarChanged(val) {},
+    handleLogout() {
+      localStorage.removeItem('token')
+      this.$router.push('/login')
+    },
   },
 }
 </script>
