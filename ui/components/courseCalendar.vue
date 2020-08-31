@@ -255,7 +255,7 @@ export default {
         x.sksj = ''
       }
     })
-    console.log(this.matrix)
+    // console.log(this.matrix)
   },
   mounted() {
     this.calendarHeight = document.body.clientHeight - 66
