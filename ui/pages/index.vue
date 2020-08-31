@@ -2,6 +2,7 @@
   <div>
     <tabbar
       v-model="active"
+      style="z-index: 10"
       active-color="#07c160"
       inactive-color="#000"
       @onChange="handleTabbarChanged"
