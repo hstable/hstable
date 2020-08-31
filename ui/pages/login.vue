@@ -31,7 +31,7 @@
     </van-form>
     <p style="text-align: center; margin: 5vh 0; opacity: 0.65">
       <a target="_blank" href="https://github.com/hstable/hstable"
-        >hstable开源于GitHub</a
+        >hstable 开源于 GitHub</a
       >
     </p>
   </div>
