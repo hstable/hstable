@@ -13,7 +13,7 @@
     <div
       style="
         padding-bottom: 100px;
-        background-color: #fafafa;
+        background-color: #f5f5f5;
         min-height: 100vh;
       "
     >
@@ -28,10 +28,17 @@
           />
         </div>
         <cell-group title="当前">
-          <cell title="姓名" value="王五" />
           <cell title="学号" value="20S22222" />
+          <cell title="姓名" value="王五" />
+          <cell title="课表同步时间" value="2020年8月31日" />
+        </cell-group>
+        <cell-group title="便民">
+          <cell title="校园地图" is-link />
         </cell-group>
         <cell-group title="操作">
+          <cell title="同步课表" is-link />
+        </cell-group>
+        <cell-group title="状态">
           <cell title="登出" is-link />
         </cell-group>
       </div>
@@ -40,11 +47,30 @@
 </template>
 
 <script>
-import { Tabbar, TabbarItem, Cell, CellGroup, Image as VanImage } from 'vant'
+import {
+  Tabbar,
+  TabbarItem,
+  Cell,
+  CellGroup,
+  Image as VanImage,
+  Grid,
+  GridItem,
+} from 'vant'
 import CourseCalender from '~/components/courseCalendar'
 
 export default {
-  components: { CourseCalender, Tabbar, TabbarItem, Cell, CellGroup, VanImage },
+  components: {
+    CourseCalender,
+    Tabbar,
+    TabbarItem,
+    Cell,
+    CellGroup,
+    VanImage,
+    // eslint-disable-next-line vue/no-unused-components
+    Grid,
+    // eslint-disable-next-line vue/no-unused-components
+    GridItem,
+  },
   data: () => ({
     active: 0,
   }),

@@ -51,6 +51,7 @@
     <Popup v-model="showPicker" round position="bottom">
       <Picker
         show-toolbar
+        :title="term"
         :columns="weeks"
         :default-index="week - 1"
         @cancel="showPicker = false"
@@ -161,6 +162,7 @@ export default {
   mixins: [calendarColumns],
   data() {
     return {
+      term: '秋季学期',
       weeks: [
         1,
         2,
@@ -397,6 +399,7 @@ export default {
               ">
                 <div>
                   <p style="font-weight:bold">${matrix[i][j].kcmc}</p>
+                  <p style="font-weight:bold">[${matrix[i][j].dgjsmc}]</p>
                   <p style="font-weight:bold">@${room}</p>
                 </div>
               </div>
