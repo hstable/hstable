@@ -38,10 +38,11 @@ var identityKey = handler.IdentityKey
 //	})
 //}
 
+var config struct {
+	Key       string `desc:"key of the thing"`
+}
+
 func init() {
-	var config struct {
-		Key       string `desc:"key of the thing"`
-	}
 	gonfig.Load(&config, gonfig.Conf{
 		//ConfigFileVariable: "config", // enables passing --configfile myfile.conf
 		FileDisable: true,
@@ -67,7 +68,7 @@ func main() {
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
-		Key:         []byte("secret key"),
+		Key:         []byte(config.Key),
 		Timeout:     time.Hour * 24 * 30,
 		IdentityKey: identityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
