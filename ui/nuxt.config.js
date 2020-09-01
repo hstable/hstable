@@ -1,4 +1,8 @@
 export default {
+  server: {
+    port: 80, // default: 3000
+    host: '0.0.0.0', // default: localhost
+  },
   /*
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
@@ -14,7 +18,7 @@ export default {
    ** See https://nuxtjs.org/api/configuration-head
    */
   head: {
-    title: 'hstable 哈深格子',
+    title: 'HSTable | 哈深格子',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
