@@ -11,7 +11,7 @@ import (
 const (
 	userName = "root"
 	password = "123456"
-	ip = "127.0.0.1"
+	ip = "db"
 	port = "3306"
 	dbName = "hstable"
 
@@ -26,7 +26,7 @@ func init() {
 //注意方法名大写，就是public
 func InitDB()  {
 	//构建连接："用户名:密码@tcp(IP:端口)/数据库?charset=utf8"
-	path := strings.Join([]string{userName, ":", password, "@tcp(",ip, ":", port, ")/", dbName, "?charset=utf8"}, "")
+	path := strings.Join([]string{userName, ":", password, "@tcp(",ip, ":", port, ")/", dbName, "?charset=utf8mb4"}, "")
 	fmt.Println("path: " + path)
 
 	//打开数据库,前者是驱动名，所以要导入： _ "github.com/go-sql-driver/mysql"
