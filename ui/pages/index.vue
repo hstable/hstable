@@ -32,7 +32,11 @@
           <cell title="课表同步时间" value="2020年8月31日" />
         </cell-group>
         <cell-group title="便民">
-          <cell title="校园地图" is-link />
+          <cell
+            title="校园地图"
+            is-link
+            :url="require('~/assets/img/map.png')"
+          />
         </cell-group>
         <cell-group title="操作">
           <cell title="同步课表" is-link />
