@@ -5,3 +5,9 @@ type StudentCourse struct {
 	Student_number string
 	Course string
 }
+
+type StudentCourseResult struct {
+	Id int
+	Student_number string
+	Course Course
+}
