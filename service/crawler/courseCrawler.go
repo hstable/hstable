@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -20,8 +21,7 @@ func init() {
 	client.Jar, _ = cookiejar.New(nil)
 }
 
-
-
+var lt = ""
 var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/casLogin"
 var Course_URL = "http://jw.hitsz.edu.cn/Xsxk/queryYxkc"
 
@@ -33,16 +33,21 @@ func get_lt() string {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Println("..............")
 		log.Println(err)
+		return "error"
 	}
 	//fmt.Print("lalala: \n" + string(body))
 	//	提取校验码
-	template := regexp.MustCompile(`<input.*?type="hidden".*?value="(.*?)".*?/>`)
-	lt := template.FindStringSubmatch(string(body))[1]
+	//fmt.Println(string(body))
+	if lt == "" {
+		template := regexp.MustCompile(`<input.*?type="hidden".*?value="(.*?)".*?/>`)
+		lt = template.FindStringSubmatch(string(body))[1]
+	}
 	return lt
 }
 
-func Log_in(account string, password string) {
+func Log_in(account string, password string) error {
 	params := model.PostParams{
 		Username:   account,
 		Password:   password,
@@ -68,7 +73,13 @@ func Log_in(account string, password string) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println(string(body))
+	body_str := string(body)
+	if strings.Contains(body_str, "账号密码验证失败") {
+		fmt.Println("账号密码验证失败")
+		return errors.New("login error")
+	}
+	//fmt.Println(string(body_str))
+	return nil
 }
 func construct_params(params_json string) string {
 	params_str := strings.Replace(params_json, "\"", "", -1)
@@ -93,18 +104,23 @@ func CrawlerCourse() model.Course {
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	body_str := string(body)
 	var course_data model.Course
-	json.Unmarshal([]byte(string(body)), &course_data)
+	json.Unmarshal([]byte(body_str), &course_data)
 	fmt.Println(len(course_data.YxkcList))
 	fmt.Println(course_data.YxkcList[1])
+	return course_data
+}
+func StoreData(course_data model.Course)  {
 	// 存储到数据库
 	student_number := course_data.YxkcList[0].Xh
-	course_info, err := json.Marshal(course_data)
+	course_info, _ := json.Marshal(course_data)
 	stu_course := mysql.SelectByXh(student_number)
 	if stu_course.Id == 0 {
+		fmt.Println(student_number)
+		fmt.Println(string(course_info))
 		mysql.Insert(student_number, string(course_info))
 	}else {
 		mysql.UpdateByXh(student_number, string(course_info))
 	}
-	return course_data
 }

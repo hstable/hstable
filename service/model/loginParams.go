@@ -10,3 +10,13 @@ type PostParams struct {
 	VcUsername string `json:"vc_username"`
 	VcPassword string `json:"vc_password"`
 }
+
+type LoginData struct {
+	Account  string `json:"account"`
+	Password string `json:"password"`
+}
+
+type GotCourse struct {
+	Account  string `json:"account"`
+	Course string `json:"course"`
+}
