@@ -1,0 +1,23 @@
+version: "3"
+services:
+  ui:
+    ports:
+      - 30001:80
+    restart: always
+    build: ui/
+    environment:
+      API_URL: http://backend:9090/api/
+      API_URL_BROWSER: /api/
+  service:
+    ports:
+      - 30002:8000
+    environment:
+      - HSTABLE_KEY
+    restart: always
+    build: service/
+  db:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
