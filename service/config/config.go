@@ -11,6 +11,7 @@ type Config struct {
 	IP     string `default:"0.0.0.0" desc:"ip to listen"`
 	Port   string `default:"8000" desc:"port to listen"`
 	DBIP   string `id:"dbip" default:"127.0.0.1" desc:"database ip to connect"`
+	DBPort string `id:"dbport" default:"3306" desc:"database port to connect"`
 	DBUser string `id:"dbuser" default:"root" desc:"database username"`
 	DBPass string `id:"dbpass" default:"123456" desc:"database password"`
 }

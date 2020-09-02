@@ -6,14 +6,14 @@ services:
     restart: always
     build: ui/
     environment:
-      API_URL: http://backend:9090/api/
-      API_URL_BROWSER: /api/
+      API_URL_BROWSER: /
   service:
     ports:
       - 30002:8000
     environment:
       - HSTABLE_KEY
       - HSTABLE_DBIP=db
+      - HSTABLE_DBPORT=3306
     restart: always
     build: service/
   db:
@@ -21,4 +21,5 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_ROOT_HOST=172.16.0.0/255.240.0.0

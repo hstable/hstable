@@ -11,12 +11,12 @@ import (
 
 //数据库配置
 const (
-	port   = "3306"
 	dbName = "hstable"
 )
 
 var conf = config.GetConfig()
 var ip = conf.DBIP
+var port = conf.DBPort
 var userName = conf.DBUser
 var password = conf.DBPass
 
