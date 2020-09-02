@@ -8,6 +8,7 @@ import (
 	"service/crawler"
 	"service/model"
 	"service/mysql"
+	"time"
 )
 
 var IdentityKey = "account"
@@ -31,7 +32,10 @@ func GetCourseByJW(c *gin.Context) {
 	}
 	//	fmt.Println("---------------------------------------------------------")
 	crawler.StoreData(course_data)
-	c.JSON(200, gin.H{"course": course_data})
+	c.JSON(200, gin.H{
+		"course":      course_data,
+		"latest_time": time.Now(),
+	})
 }
 
 func GetCourseByDB(c *gin.Context) {
@@ -48,5 +52,6 @@ func GetCourseByDB(c *gin.Context) {
 		Id:             course_data.Id,
 		Student_number: course_data.Student_number,
 		Course:         stu_course,
+		Last_sync:      course_data.Last_sync,
 	}})
 }
