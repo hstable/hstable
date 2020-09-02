@@ -15,17 +15,11 @@ import (
 	//"github.com/go-sql-driver/mysql"
 )
 
-var client http.Client
-
-func init() {
-	client.Jar, _ = cookiejar.New(nil)
-}
-
-var lt = ""
 var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/casLogin"
 var Course_URL = "http://jw.hitsz.edu.cn/Xsxk/queryYxkc"
 
-func get_lt() string {
+func get_lt(client *http.Client) string {
+	var lt = ""
 	resp, err := client.Get(JW_URL)
 	if err != nil {
 		log.Println(err)
@@ -40,19 +34,19 @@ func get_lt() string {
 	//fmt.Print("lalala: \n" + string(body))
 	//	提取校验码
 	//fmt.Println(string(body))
-	if lt == "" {
-		template := regexp.MustCompile(`<input.*?type="hidden".*?value="(.*?)".*?/>`)
-		lt = template.FindStringSubmatch(string(body))[1]
-	}
+	template := regexp.MustCompile(`<input.*?type="hidden".*?value="(.*?)".*?/>`)
+	lt = template.FindStringSubmatch(string(body))[1]
 	return lt
 }
 
-func Log_in(account string, password string) error {
+func Log_in(account string, password string) (model.Course, error) {
+	var client = new(http.Client)
+	client.Jar, _ = cookiejar.New(nil)
 	params := model.PostParams{
 		Username:   account,
 		Password:   password,
-		RememberMe: "on",
-		Lt:         get_lt(),
+		RememberMe: "off",
+		Lt:         get_lt(client),
 		Execution:  "e1s1",
 		EventID:    "submit",
 		VcUsername: "",
@@ -74,12 +68,12 @@ func Log_in(account string, password string) error {
 		log.Println(err)
 	}
 	body_str := string(body)
-	if strings.Contains(body_str, "账号密码验证失败") {
-		fmt.Println("账号密码验证失败")
-		return errors.New("login error")
+	//log.Println(body_str)
+	if strings.Contains(body_str, "统一身份认证系统") {
+		return model.Course{}, errors.New("login error")
 	}
 	//fmt.Println(string(body_str))
-	return nil
+	return crawlerCourse(client), nil
 }
 func construct_params(params_json string) string {
 	params_str := strings.Replace(params_json, "\"", "", -1)
@@ -91,7 +85,7 @@ func construct_params(params_json string) string {
 	return params_str
 }
 
-func CrawlerCourse() model.Course {
+func crawlerCourse(client *http.Client) model.Course {
 	params := model.Get_Post_Course()
 	params_json, err := json.Marshal(params)
 	if err != nil {
@@ -105,22 +99,23 @@ func CrawlerCourse() model.Course {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	body_str := string(body)
+	//log.Println(body_str)
 	var course_data model.Course
 	json.Unmarshal([]byte(body_str), &course_data)
 	fmt.Println(len(course_data.YxkcList))
-	fmt.Println(course_data.YxkcList[1])
+	fmt.Println(course_data.YxkcList[0])
 	return course_data
 }
-func StoreData(course_data model.Course)  {
+func StoreData(course_data model.Course) {
 	// 存储到数据库
 	student_number := course_data.YxkcList[0].Xh
 	course_info, _ := json.Marshal(course_data)
-	stu_course := mysql.SelectByXh(student_number)
-	if stu_course.Id == 0 {
+	_, err := mysql.SelectByXh(student_number)
+	if err != nil {
 		fmt.Println(student_number)
 		fmt.Println(string(course_info))
 		mysql.Insert(student_number, string(course_info))
-	}else {
+	} else {
 		mysql.UpdateByXh(student_number, string(course_info))
 	}
 }
