@@ -8,9 +8,10 @@ import (
 
 func Insert(student_number string, course_info string) {
 	insert_query := "insert into student_course (student_number, course_info) values(?,?)"
-	rows, _ := DB.Exec(insert_query, student_number, course_info)
-	//checkErr(err)
-	num, _ := rows.RowsAffected()
+	rows, err := DB.Exec(insert_query, student_number, course_info)
+	checkErr(err)
+	num, err := rows.RowsAffected()
+	checkErr(err)
 	fmt.Println("effected: " + strconv.Itoa(int(num)))
 }
 func SelectByXh(student_number string) model.StudentCourse {

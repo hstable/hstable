@@ -13,6 +13,7 @@ services:
       - 30002:8000
     environment:
       - HSTABLE_KEY
+      - HSTABLE_DBIP=db
     restart: always
     build: service/
   db:

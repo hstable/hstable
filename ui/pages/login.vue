@@ -45,7 +45,19 @@ export default {
     password: '',
   }),
   methods: {
-    onSubmit() {},
+    onSubmit() {
+      this.$axios({
+        url: '/api/login',
+        method: 'post',
+        data: { account: this.username, password: this.password },
+      }).then((res) => {
+        const { data } = res
+        if (data.code === 200) {
+          localStorage.token = data.token
+          this.$router.push('/')
+        }
+      })
+    },
   },
 }
 </script>
