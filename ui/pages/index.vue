@@ -95,6 +95,7 @@ import dayjs from 'dayjs'
 import CourseCalender from '~/components/courseCalendar'
 
 export default {
+  middleware: 'auth',
   components: {
     CourseCalender,
     Tabbar,
