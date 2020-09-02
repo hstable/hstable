@@ -15,7 +15,7 @@ var IdentityKey = "account"
 func GetCourseByJW(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	account := claims[IdentityKey]
-	var data struct{
+	var data struct {
 		Password string `json:"password"`
 	}
 	err := c.BindJSON(&data)
@@ -23,14 +23,13 @@ func GetCourseByJW(c *gin.Context) {
 		c.JSON(401, gin.H{"message": "struct Error!!!"})
 		return
 	}
-	err = crawler.Log_in(account.(string), data.Password)
+	course_data, err := crawler.Log_in(account.(string), data.Password)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(401, gin.H{"message": "login Error!!!"})
 		return
 	}
 	//	fmt.Println("---------------------------------------------------------")
-	course_data := crawler.CrawlerCourse()
 	crawler.StoreData(course_data)
 	c.JSON(200, gin.H{"course": course_data})
 }
@@ -38,7 +37,11 @@ func GetCourseByJW(c *gin.Context) {
 func GetCourseByDB(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	account := claims[IdentityKey]
-	course_data := mysql.SelectByXh(account.(string))
+	course_data, err := mysql.SelectByXh(account.(string))
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
 	var stu_course model.Course
 	json.Unmarshal([]byte(course_data.Course), &stu_course)
 	c.JSON(200, gin.H{"course": model.StudentCourseResult{
