@@ -28,7 +28,7 @@
         <cell-group title="当前">
           <cell title="学号" :value="account" />
           <cell title="姓名" :value="name" />
-          <cell title="课表同步时间" value="2020年8月31日" />
+          <cell title="课表同步时间" :value="latestUpdate" />
         </cell-group>
         <cell-group title="便民">
           <cell title="研究生教务平台" is-link url="http://jw.hitsz.edu.cn" />
@@ -91,6 +91,7 @@ import {
   Button as VanButton,
   Notify,
 } from 'vant'
+import dayjs from 'dayjs'
 import CourseCalender from '~/components/courseCalendar'
 
 export default {
@@ -116,6 +117,7 @@ export default {
     showSyncPopup: false,
     account: '',
     password: '',
+    latestUpdate: '',
   }),
   computed: {
     name() {
@@ -141,6 +143,9 @@ export default {
         const { data } = res
         this.courseCalendarData = data.course.Course.yxkcList
         this.account = data.course.Student_number
+        this.latestUpdate = dayjs(data.course.Last_sync).format(
+          'YYYY-MM-DD HH:mm:ss'
+        )
       })
     },
     handleSubmitSync() {
