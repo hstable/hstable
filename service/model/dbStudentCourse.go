@@ -13,4 +13,5 @@ type StudentCourseResult struct {
 	Id int
 	Student_number string
 	Course Course
+	Last_sync time.Time
 }
