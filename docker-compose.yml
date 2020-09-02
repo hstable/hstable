@@ -6,8 +6,7 @@ services:
     restart: always
     build: ui/
     environment:
-      API_URL: http://service:8000/api/
-      API_URL_BROWSER: /api/
+      API_URL_BROWSER: /
   service:
     ports:
       - 30002:8000
