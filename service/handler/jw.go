@@ -30,8 +30,6 @@ func GetCourseByJW(c *gin.Context) {
 		c.JSON(401, gin.H{"message": "login Error!!!"})
 		return
 	}
-	//	fmt.Println("---------------------------------------------------------")
-	crawler.StoreData(course_data)
 	c.JSON(200, gin.H{
 		"course":      course_data,
 		"latest_time": time.Now(),
