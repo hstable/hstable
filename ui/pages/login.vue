@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { Form as VanForm, Field, Button as VanButton } from 'vant'
+import { Form as VanForm, Field, Button as VanButton, Notify } from 'vant'
 export default {
   name: 'Login',
   components: { VanForm, Field, VanButton },
@@ -52,13 +52,17 @@ export default {
         url: '/api/login',
         method: 'post',
         data: { account: this.username, password: this.password },
-      }).then((res) => {
-        const { data } = res
-        if (data.code === 200) {
-          localStorage.token = data.token
-          this.$router.push('/')
-        }
       })
+        .then((res) => {
+          const { data } = res
+          if (data.code === 200) {
+            localStorage.token = data.token
+            this.$router.push('/')
+          }
+        })
+        .catch(() => {
+          Notify({ type: 'warning', message: '密码错误，请检查后重试' })
+        })
     },
   },
 }
