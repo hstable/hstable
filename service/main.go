@@ -39,19 +39,21 @@ var identityKey = handler.IdentityKey
 //}
 
 var config struct {
-	Key       string `desc:"key of the thing"`
+	Key string `desc:"key of the thing"`
 }
 
 func init() {
 	gonfig.Load(&config, gonfig.Conf{
 		//ConfigFileVariable: "config", // enables passing --configfile myfile.conf
-		FileDisable: true,
-		FileDefaultFilename: "",
+		FileDisable:         true,
 		// The default decoder will try TOML, YAML and JSON.
 		//FileDecoder: gonfig.DecoderTOML,
 		EnvDisable: false,
-		EnvPrefix: "HSTABLE_",
+		EnvPrefix:  "HSTABLE_",
 	})
+	if config.Key == "" {
+		log.Fatal("HSTABLE_KEY cannot be empty!")
+	}
 	//fmt.Println("config: " + config.Key)
 }
 
@@ -94,7 +96,7 @@ func main() {
 			password := loginVals.Password
 			// Login
 			err := crawler.Log_in(userAccount, password)
-			if (err == nil) { // login success
+			if err == nil { // login success
 				// crawler and store data
 				course_data := crawler.CrawlerCourse()
 				crawler.StoreData(course_data)
@@ -106,7 +108,7 @@ func main() {
 			return nil, jwt.ErrFailedAuthentication
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if _, ok := data.(*model.GotCourse); ok{
+			if _, ok := data.(*model.GotCourse); ok {
 				return true
 			}
 			return false
