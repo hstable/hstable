@@ -1,7 +1,7 @@
 export default {
   data() {
     return {
-      data1: [
+      data: [
         {
           xn: null,
           xq: null,
@@ -2982,49 +2982,6 @@ export default {
           MC: '双语',
           DM: '3',
           MC_EN: null,
-        },
-      ],
-      calendarColumns: [
-        {
-          title: ' ',
-          key: 'time',
-          width: 50,
-          align: 'center',
-        },
-        {
-          title: '周一',
-          key: 1,
-          align: 'center',
-        },
-        {
-          title: '周二',
-          key: 2,
-          align: 'center',
-        },
-        {
-          title: '周三',
-          key: 3,
-          align: 'center',
-        },
-        {
-          title: '周四',
-          key: 4,
-          align: 'center',
-        },
-        {
-          title: '周五',
-          key: 5,
-          align: 'center',
-        },
-        {
-          title: '周六',
-          key: 6,
-          align: 'center',
-        },
-        {
-          title: '周日',
-          key: 7,
-          align: 'center',
         },
       ],
     }

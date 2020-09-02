@@ -19,7 +19,7 @@
           stripe
           border
           :columns="columns"
-          :data="data1"
+          :data="data"
           size="default"
         ></Table>
       </Col>
@@ -41,7 +41,7 @@
         stripe
         border
         :columns="columns"
-        :data="data1"
+        :data="data"
         size="default"
       ></Table>
     </div>
@@ -62,8 +62,9 @@
 </template>
 
 <script>
-import calendarColumns from 'assets/js/calendarColumnsMock'
+// import calendarMock from 'assets/js/calendarMock'
 import { Row, Col, Picker, Popup } from 'vant'
+import dayjs from 'dayjs'
 
 const tiptopMap = {
   一: 1,
@@ -159,10 +160,59 @@ function mergedMatrix(a, b) {
 export default {
   name: 'CourseCalender',
   components: { Row, Col, Picker, Popup },
-  mixins: [calendarColumns],
+  // mixins: [calendarMock],
+  props: {
+    data: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+  },
   data() {
     return {
-      term: '秋季学期',
+      calendarColumns: [
+        {
+          title: ' ',
+          key: 'time',
+          width: 50,
+          align: 'center',
+        },
+        {
+          title: '周一',
+          key: 1,
+          align: 'center',
+        },
+        {
+          title: '周二',
+          key: 2,
+          align: 'center',
+        },
+        {
+          title: '周三',
+          key: 3,
+          align: 'center',
+        },
+        {
+          title: '周四',
+          key: 4,
+          align: 'center',
+        },
+        {
+          title: '周五',
+          key: 5,
+          align: 'center',
+        },
+        {
+          title: '周六',
+          key: 6,
+          align: 'center',
+        },
+        {
+          title: '周日',
+          key: 7,
+          align: 'center',
+        },
+      ],
       weeks: [
         1,
         2,
@@ -233,35 +283,53 @@ export default {
       week: 1, // begin from 1
       matrix: newMatrix(),
       showPicker: false,
+      termBeginTime: null,
     }
   },
   computed: {
     screenWidth() {
       return document.body.clientWidth
     },
-  },
-  created() {
-    this.data1.forEach((x) => {
-      const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
-      if (result) {
-        // result: ["<p>1-4,7-9周,星期四第5-6节 T6205</p>", "<p>6周,星期六第5-6节,T6205	1-5,7-9周,星期二第5-6节 T6205</p>"]
-        result.forEach((r) => {
-          r = r.substr('<p>'.length, r.length - '<p></p>'.length)
-          const mat = generateFromRow(r)
-          this.matrix = mergedMatrix(this.matrix, mat)
-        })
-        x.sksj = result
-          .map((x) => x.substr('<p>'.length, x.length - '<p></p>'.length))
-          .join('\t')
+    term() {
+      if (this.data.length) {
+        return this.data[0].xnxqmc
       } else {
-        x.sksj = ''
+        return ''
       }
-    })
-    // console.log(this.matrix)
+    },
   },
-  mounted() {
-    this.calendarHeight = document.body.clientHeight - 66
-    this.renderCalendar()
+  watch: {
+    data(val) {
+      val.forEach((x) => {
+        const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
+        if (result) {
+          // result: ["<p>1-4,7-9周,星期四第5-6节 T6205</p>", "<p>6周,星期六第5-6节,T6205	1-5,7-9周,星期二第5-6节 T6205</p>"]
+          result.forEach((r) => {
+            r = r.substr('<p>'.length, r.length - '<p></p>'.length)
+            const mat = generateFromRow(r)
+            this.matrix = mergedMatrix(this.matrix, mat)
+          })
+          x.sksj = result
+            .map((x) => x.substr('<p>'.length, x.length - '<p></p>'.length))
+            .join('\t')
+        } else {
+          x.sksj = ''
+        }
+      })
+      this.calendarHeight = document.body.clientHeight - 66
+      val.forEach((x) => {
+        if (x.ktxkjssj) {
+          if (!this.termBeginTime || this.termBeginTime < dayjs(x.ktxkjssj)) {
+            this.termBeginTime = dayjs(x.ktxkjssj)
+          }
+        }
+      })
+      this.termBeginTime = this.termBeginTime.subtract(7, 'day')
+      this.week = Math.trunc(
+        dayjs(Date.now() - this.termBeginTime) / 1000 / 3600 / 24 / 7 + 1
+      )
+      this.renderCalendar()
+    },
   },
   methods: {
     onPickerConfirm(val) {
@@ -270,7 +338,7 @@ export default {
       this.renderCalendar()
     },
     handleSelectChange(term) {
-      this.data1 = []
+      this.data = []
       this.renderCalendar()
       this.$axios({
         url: `/${this.isStudent ? 'student' : 'teacher'}/courseCalendar`,
@@ -285,7 +353,7 @@ export default {
             return
           }
           for (let i = 0; i < cid.length; i++) {
-            this.data1.push({
+            this.data.push({
               kcdm: cid[i],
               kcmc: cname[i],
               dgjsmc: tname[i],
@@ -298,7 +366,7 @@ export default {
           this.renderCalendar()
         })
     },
-    renderCalendar({ raw = this.data1, hover: { kcdm, sksj } = {} } = {}) {
+    renderCalendar({ raw = this.data, hover: { kcdm, sksj } = {} } = {}) {
       // raw是课程数组
       // clear
       // matrix下标从0开始
@@ -436,6 +504,7 @@ export default {
     text-align: center;
     height: 60px;
   }
+
   .node {
     position: absolute;
     top: 0;
@@ -447,11 +516,14 @@ export default {
     font-size: 0.8em;
     border-radius: 5px;
   }
+
   $border-color: #e8eaeca0;
+
   .ivu-table-border td,
   .ivu-table-border th {
     border-right: 1px solid $border-color;
   }
+
   .ivu-table td,
   .ivu-table th {
     border-bottom: 1px solid $border-color;
@@ -463,6 +535,7 @@ export default {
     padding: 0 5px !important;
   }
 }
+
 .float-week {
   height: 50px;
   width: 50px;

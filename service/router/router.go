@@ -17,7 +17,10 @@ var identityKey = handler.IdentityKey
 func Router() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
-	r.Use(cors.Default())
+	corsConfig:=cors.DefaultConfig()
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
+	corsConfig.AllowAllOrigins = true
+	r.Use(cors.New(corsConfig))
 	r.Use(gin.Recovery())
 	g := r.Group("/api")
 	conf := config.GetConfig()

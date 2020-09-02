@@ -2,7 +2,9 @@
   <div class="login-wrapper">
     <div style="margin: 5vh 0; padding: 0 16px">
       <h1>校园用户登录</h1>
-      <p class="vice-info">我们不存储您的密码，首次登录将自动同步课表</p>
+      <p class="vice-info">
+        我们不会存储您的密码，登录时将使用校内接口验证密码并自动同步课表
+      </p>
     </div>
     <van-form @submit="onSubmit">
       <field
@@ -10,7 +12,7 @@
         name="学号"
         label="学号"
         placeholder="学号"
-        :rules="[{ required: true, message: '请填写用户名' }]"
+        :rules="[{ required: true, message: '请填写学号' }]"
       />
       <field
         v-model="password"
@@ -36,7 +38,7 @@
 </template>
 
 <script>
-import { Form as VanForm, Field, Button as VanButton } from 'vant'
+import { Form as VanForm, Field, Button as VanButton, Notify } from 'vant'
 export default {
   name: 'Login',
   components: { VanForm, Field, VanButton },
@@ -50,13 +52,17 @@ export default {
         url: '/api/login',
         method: 'post',
         data: { account: this.username, password: this.password },
-      }).then((res) => {
-        const { data } = res
-        if (data.code === 200) {
-          localStorage.token = data.token
-          this.$router.push('/')
-        }
       })
+        .then((res) => {
+          const { data } = res
+          if (data.code === 200) {
+            localStorage.token = data.token
+            this.$router.push('/')
+          }
+        })
+        .catch(() => {
+          Notify({ type: 'warning', message: '密码错误，请检查后重试' })
+        })
     },
   },
 }
