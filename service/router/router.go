@@ -49,11 +49,9 @@ func Router() *gin.Engine {
 			}
 			userAccount := loginVals.Account
 			password := loginVals.Password
-			// Login
-			course_data, err := crawler.Log_in(userAccount, password)
+			// Login crawler and store data
+			_, err := crawler.Log_in(userAccount, password)
 			if err == nil { // login success
-				// crawler and store data
-				crawler.StoreData(course_data)
 				return &model.GotCourse{
 					Account: userAccount,
 					Course:  "xxx",

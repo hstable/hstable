@@ -73,7 +73,9 @@ func Log_in(account string, password string) (model.Course, error) {
 		return model.Course{}, errors.New("login error")
 	}
 	//fmt.Println(string(body_str))
-	return crawlerCourse(client), nil
+	course_data := crawlerCourse(client)
+	storeData(account, course_data)
+	return course_data, nil
 }
 func construct_params(params_json string) string {
 	params_str := strings.Replace(params_json, "\"", "", -1)
@@ -102,20 +104,19 @@ func crawlerCourse(client *http.Client) model.Course {
 	//log.Println(body_str)
 	var course_data model.Course
 	json.Unmarshal([]byte(body_str), &course_data)
-	fmt.Println(len(course_data.YxkcList))
-	fmt.Println(course_data.YxkcList[0])
+	//fmt.Println(len(course_data.YxkcList))
+	//fmt.Println(course_data.YxkcList[0])
 	return course_data
 }
-func StoreData(course_data model.Course) {
+func storeData(account string, course_data model.Course) {
 	// 存储到数据库
-	student_number := course_data.YxkcList[0].Xh
 	course_info, _ := json.Marshal(course_data)
-	_, err := mysql.SelectByXh(student_number)
+	_, err := mysql.SelectByXh(account)
 	if err != nil {
-		fmt.Println(student_number)
+		fmt.Println(account)
 		fmt.Println(string(course_info))
-		mysql.Insert(student_number, string(course_info))
+		mysql.Insert(account, string(course_info))
 	} else {
-		mysql.UpdateByXh(student_number, string(course_info))
+		mysql.UpdateByXh(account, string(course_info))
 	}
 }
