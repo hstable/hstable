@@ -13,10 +13,11 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.12.0",
     "@nuxtjs/pwa": "^3.0.0-beta.20",
+    "dayjs": "^1.8.35",
+    "iview": "3.4.1",
     "nuxt": "^2.14.0",
     "nuxt-babel": "^1.0.1",
     "vant": "^2.10.3",
-    "iview": "3.4.1",
     "vue-easytable": "^1.7.2",
     "vue-router": "^3.4.3"
   },

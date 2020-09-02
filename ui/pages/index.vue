@@ -89,6 +89,7 @@ import {
   Form as VanForm,
   Field,
   Button as VanButton,
+  Notify,
 } from 'vant'
 import CourseCalender from '~/components/courseCalendar'
 
@@ -113,16 +114,10 @@ export default {
     active: 0,
     courseCalendarData: [],
     showSyncPopup: false,
+    account: '',
     password: '',
   }),
   computed: {
-    account() {
-      if (this.courseCalendarData.length) {
-        return this.courseCalendarData[0].xh
-      } else {
-        return ''
-      }
-    },
     name() {
       if (this.courseCalendarData.length) {
         return this.courseCalendarData[0].xm
@@ -145,6 +140,7 @@ export default {
       }).then((res) => {
         const { data } = res
         this.courseCalendarData = data.course.Course.yxkcList
+        this.account = data.course.Student_number
       })
     },
     handleSubmitSync() {
@@ -152,9 +148,13 @@ export default {
         url: '/api/course',
         method: 'put',
         data: { password: this.password },
-      }).then((res) => {
-        location.reload()
       })
+        .then((res) => {
+          location.reload()
+        })
+        .catch(() => {
+          Notify({ type: 'warning', message: '密码错误，请检查后重试' })
+        })
     },
   },
 }
