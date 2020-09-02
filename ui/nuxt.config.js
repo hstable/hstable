@@ -38,7 +38,11 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: ['~/plugins/easytable.js', '~/plugins/iview.js'],
+  plugins: [
+    '~/plugins/easytable.js',
+    '~/plugins/iview.js',
+    '~/plugins/axios.js',
+  ],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components

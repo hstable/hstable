@@ -10,42 +10,69 @@
       <tabbar-item icon="setting-o">我的</tabbar-item>
     </tabbar>
     <div
-      style="
-        padding-bottom: 100px;
-        background-color: #f5f5f5;
-        min-height: 100vh;
-      "
+      style="padding-bottom: 75px; background-color: #f5f5f5; min-height: 100vh"
     >
-      <course-calender v-show="active === 0"></course-calender>
-      <div v-show="active === 1" style="padding: 50px 0 100px">
+      <course-calender
+        v-show="active === 0"
+        :data="courseCalendarData"
+      ></course-calender>
+      <div v-show="active === 1" style="padding: 25px 0 0">
         <div style="display: flex; justify-content: center">
           <van-image
             round
-            width="150px"
-            height="150px"
+            width="100px"
+            height="100px"
             :src="require('~/assets/avatar.jpg')"
           />
         </div>
         <cell-group title="当前">
-          <cell title="学号" value="20S22222" />
-          <cell title="姓名" value="王五" />
+          <cell title="学号" :value="account" />
+          <cell title="姓名" :value="name" />
           <cell title="课表同步时间" value="2020年8月31日" />
         </cell-group>
         <cell-group title="便民">
+          <cell title="研究生教务平台" is-link url="http://jw.hitsz.edu.cn" />
+          <cell title="信息门户" is-link url="http://portal.hitsz.edu.cn/" />
           <cell
             title="校园地图"
             is-link
             :url="require('~/assets/img/map.png')"
           />
+          <cell title="图书馆" is-link url="https://lib.utsz.edu.cn/" />
         </cell-group>
         <cell-group title="操作">
-          <cell title="同步课表" is-link />
+          <cell title="同步课表" is-link @click="showSyncPopup = true" />
         </cell-group>
         <cell-group title="状态">
           <cell title="登出" is-link @click="handleLogout" />
         </cell-group>
       </div>
     </div>
+    <van-popup
+      v-model="showSyncPopup"
+      position="top"
+      :style="{ height: '175px' }"
+    >
+      <van-form style="padding: 5vw" @submit="handleSubmitSync">
+        <field :value="this.account" name="学号" label="学号" disabled />
+        <field
+          v-model="password"
+          type="password"
+          name="密码"
+          label="密码"
+          placeholder="密码"
+        />
+        <van-button
+          style="margin-top: 12px"
+          block
+          hairline
+          type="primary"
+          native-type="submit"
+        >
+          同步课表
+        </van-button>
+      </van-form>
+    </van-popup>
   </div>
 </template>
 
@@ -58,6 +85,10 @@ import {
   Image as VanImage,
   Grid,
   GridItem,
+  Popup as VanPopup,
+  Form as VanForm,
+  Field,
+  Button as VanButton,
 } from 'vant'
 import CourseCalender from '~/components/courseCalendar'
 
@@ -73,14 +104,57 @@ export default {
     Grid,
     // eslint-disable-next-line vue/no-unused-components
     GridItem,
+    VanPopup,
+    VanForm,
+    Field,
+    VanButton,
   },
   data: () => ({
     active: 0,
+    courseCalendarData: [],
+    showSyncPopup: false,
+    password: '',
   }),
+  computed: {
+    account() {
+      if (this.courseCalendarData.length) {
+        return this.courseCalendarData[0].xh
+      } else {
+        return ''
+      }
+    },
+    name() {
+      if (this.courseCalendarData.length) {
+        return this.courseCalendarData[0].xm
+      } else {
+        return ''
+      }
+    },
+  },
+  created() {
+    this.getCourses()
+  },
   methods: {
     handleLogout() {
       localStorage.removeItem('token')
       this.$router.push('/login')
+    },
+    getCourses() {
+      this.$axios({
+        url: '/api/course',
+      }).then((res) => {
+        const { data } = res
+        this.courseCalendarData = data.course.Course.yxkcList
+      })
+    },
+    handleSubmitSync() {
+      this.$axios({
+        url: '/api/course',
+        method: 'put',
+        data: { password: this.password },
+      }).then((res) => {
+        location.reload()
+      })
     },
   },
 }
