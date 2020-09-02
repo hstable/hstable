@@ -71,6 +71,16 @@ export default {
   axios: {
     baseURL: process.env.API_URL_BROWSER || '//localhost:8000',
   },
+  publicRuntimeConfig: {
+    axios: {
+      browserBaseURL: '/',
+    },
+  },
+  privateRuntimeConfig: {
+    axios: {
+      baseURL: process.env.BASE_URL,
+    },
+  },
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
