@@ -62,8 +62,20 @@ export default {
             })
           }
         })
-        .catch(() => {
-          this.$Notify({ type: 'warning', message: '密码错误，请检查后重试' })
+        .catch((err) => {
+          if (err.response) {
+            if (err.response.status === 401) {
+              this.$Notify({
+                type: 'warning',
+                message: '密码错误，请检查后重试',
+              })
+              return
+            }
+          }
+          this.$Notify({
+            type: 'warning',
+            message: err.message,
+          })
         })
     },
   },

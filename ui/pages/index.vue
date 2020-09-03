@@ -153,10 +153,19 @@ export default {
         .then((res) => {
           location.reload()
         })
-        .catch(() => {
+        .catch((err) => {
+          if (err.response) {
+            if (err.response.status === 401) {
+              this.$Notify({
+                type: 'warning',
+                message: '密码错误，请检查后重试',
+              })
+              return
+            }
+          }
           this.$Notify({
             type: 'warning',
-            message: '密码错误，请检查后重试',
+            message: err.message,
           })
         })
     },
