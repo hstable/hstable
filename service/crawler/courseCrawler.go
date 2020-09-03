@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"regexp"
 	"service/model"
 	"service/mysql"
@@ -42,23 +43,28 @@ func get_lt(client *http.Client) string {
 func Log_in(account string, password string) (model.Course, error) {
 	var client = new(http.Client)
 	client.Jar, _ = cookiejar.New(nil)
-	params := model.PostParams{
-		Username:   account,
-		Password:   password,
-		RememberMe: "off",
-		Lt:         get_lt(client),
-		Execution:  "e1s1",
-		EventID:    "submit",
-		VcUsername: "",
-		VcPassword: "",
+	//params := model.PostParams{
+	//	Username:   account,
+	//	Password:   password,
+	//	RememberMe: "off",
+	//	Lt:         get_lt(client),
+	//	Execution:  "e1s1",
+	//	EventID:    "submit",
+	//	VcUsername: "",
+	//	VcPassword: "",
+	//}
+	params := url.Values{
+		"username":    {account},
+		"password":    {password},
+		"rememberMe":  {"off"},
+		"lt":          {get_lt(client)},
+		"execution":   {"e1s1"},
+		"_eventId":    {"submit"},
+		"vc_username": {""},
+		"vc_password": {""},
 	}
-	params_json, err := json.Marshal(params)
-	if err != nil {
-		log.Println(err)
-	}
-	params_str := construct_params(string(params_json))
 	//	发送请求
-	resp, err := client.Post(JW_URL, "application/x-www-form-urlencoded", strings.NewReader(params_str))
+	resp, err := client.Post(JW_URL, "application/x-www-form-urlencoded", strings.NewReader(params.Encode()))
 	if err != nil {
 		fmt.Println(err)
 	}
