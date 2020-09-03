@@ -12,10 +12,12 @@
     <div
       style="padding-bottom: 75px; background-color: #f5f5f5; min-height: 100vh"
     >
-      <course-calender
-        v-show="active === 0"
-        :data="courseCalendarData"
-      ></course-calender>
+      <client-only
+        ><course-calender
+          v-show="active === 0"
+          :data="courseCalendarData"
+        ></course-calender
+      ></client-only>
       <div v-show="active === 1" style="padding: 25px 0 0">
         <div style="display: flex; justify-content: center">
           <van-image
@@ -57,7 +59,7 @@
       :style="{ height: '175px' }"
     >
       <van-form style="padding: 5vw" @submit="handleSubmitSync">
-        <field :value="this.account" name="学号" label="学号" disabled />
+        <field :value="account" name="学号" label="学号" disabled />
         <field
           v-model="password"
           type="password"
@@ -80,40 +82,33 @@
 </template>
 
 <script>
-import {
-  Tabbar,
-  TabbarItem,
-  Cell,
-  CellGroup,
-  Image as VanImage,
-  Grid,
-  GridItem,
-  Popup as VanPopup,
-  Form as VanForm,
-  Field,
-  Button as VanButton,
-  Notify,
-} from 'vant'
 import dayjs from 'dayjs'
 import CourseCalender from '~/components/courseCalendar'
+// import { getFromCookie } from '~/assets/js/cookieTool'
+
+function getCourses(axios) {
+  return axios({
+    url: '/api/course',
+  }).then((res) => {
+    const { data } = res
+    return {
+      courseCalendarData: data.course.Course.yxkcList,
+      account: data.course.Student_number,
+      latestUpdate: dayjs(data.course.Last_sync).format('YYYY-MM-DD HH:mm:ss'),
+    }
+  })
+}
 
 export default {
-  middleware: 'auth',
+  // middleware: 'auth',
   components: {
     CourseCalender,
-    Tabbar,
-    TabbarItem,
-    Cell,
-    CellGroup,
-    VanImage,
-    // eslint-disable-next-line vue/no-unused-components
-    Grid,
-    // eslint-disable-next-line vue/no-unused-components
-    GridItem,
-    VanPopup,
-    VanForm,
-    Field,
-    VanButton,
+  },
+  async asyncData({ $axios, req, redirect }) {
+    if (!process.browser) {
+      return await getCourses($axios)
+    }
+    return {}
   },
   data: () => ({
     active: 0,
@@ -132,25 +127,10 @@ export default {
       }
     },
   },
-  created() {
-    this.getCourses()
-  },
   methods: {
     handleLogout() {
-      localStorage.removeItem('token')
+      document.token = ''
       this.$router.push('/login')
-    },
-    getCourses() {
-      this.$axios({
-        url: '/api/course',
-      }).then((res) => {
-        const { data } = res
-        this.courseCalendarData = data.course.Course.yxkcList
-        this.account = data.course.Student_number
-        this.latestUpdate = dayjs(data.course.Last_sync).format(
-          'YYYY-MM-DD HH:mm:ss'
-        )
-      })
     },
     handleSubmitSync() {
       this.$axios({
@@ -162,7 +142,10 @@ export default {
           location.reload()
         })
         .catch(() => {
-          Notify({ type: 'warning', message: '密码错误，请检查后重试' })
+          this.$Notify({
+            type: 'warning',
+            message: '密码错误，请检查后重试',
+          })
         })
     },
   },

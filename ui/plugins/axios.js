@@ -1,11 +1,18 @@
-import router from 'vue-router'
+import { getFromCookie } from '../assets/js/cookieTool'
 
-export default function ({ $axios, redirect }) {
+export default function ({ $axios, redirect, req, app }) {
   $axios.interceptors.request.use(
     (config) => {
-      if (localStorage.token) {
-        config.headers.Authorization = `Bearer ${localStorage.token}`
+      let token = ''
+      if (process.browser) {
+        token = app.$cookies.token
+        if (!token && !location.pathname.startsWith('/login')) {
+          redirect('/login')
+        }
+      } else {
+        token = getFromCookie(req.headers.cookie, 'token')
       }
+      config.headers.Authorization = `Bearer ${token}`
       return config
     },
     (err) => {
@@ -19,9 +26,7 @@ export default function ({ $axios, redirect }) {
     },
     (error) => {
       if (error.response && error.response.status === 401) {
-        router.replace({
-          path: 'login',
-        })
+        redirect('/login')
       }
       return Promise.reject(error)
     }

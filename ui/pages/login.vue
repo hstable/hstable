@@ -38,10 +38,8 @@
 </template>
 
 <script>
-import { Form as VanForm, Field, Button as VanButton, Notify } from 'vant'
 export default {
   name: 'Login',
-  components: { VanForm, Field, VanButton },
   data: () => ({
     username: '',
     password: '',
@@ -56,12 +54,12 @@ export default {
         .then((res) => {
           const { data } = res
           if (data.code === 200) {
-            localStorage.token = data.token
+            this.$cookies.set('token', data.token)
             this.$router.push('/')
           }
         })
         .catch(() => {
-          Notify({ type: 'warning', message: '密码错误，请检查后重试' })
+          this.$Notify({ type: 'warning', message: '密码错误，请检查后重试' })
         })
     },
   },
