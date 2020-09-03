@@ -46,6 +46,9 @@
         <cell-group title="状态">
           <cell title="登出" is-link @click="handleLogout" />
         </cell-group>
+        <p style="text-align: center; margin: 5vh 0; opacity: 0.65">
+          <a href="https://github.com/hstable/hstable">HSTable 开源于 GitHub</a>
+        </p>
       </div>
     </div>
     <van-popup
