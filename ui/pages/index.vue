@@ -33,12 +33,12 @@
         <cell-group title="便民">
           <cell title="研究生教务平台" is-link url="http://jw.hitsz.edu.cn" />
           <cell title="信息门户" is-link url="http://portal.hitsz.edu.cn/" />
+          <cell title="图书馆" is-link url="https://lib.utsz.edu.cn/" />
           <cell
             title="校园地图"
             is-link
             :url="require('~/assets/img/map.png')"
           />
-          <cell title="图书馆" is-link url="https://lib.utsz.edu.cn/" />
         </cell-group>
         <cell-group title="操作">
           <cell title="同步课表" is-link @click="showSyncPopup = true" />
