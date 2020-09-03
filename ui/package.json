@@ -15,6 +15,7 @@
     "@nuxtjs/pwa": "^3.0.0-beta.20",
     "dayjs": "^1.8.35",
     "iview": "3.4.1",
+    "js-cookie": "^2.2.1",
     "nuxt": "^2.14.0",
     "nuxt-babel": "^1.0.1",
     "vant": "^2.10.3",

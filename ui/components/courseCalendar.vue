@@ -48,7 +48,7 @@
     <div class="float-week" @click="showPicker = true">
       <span>第</span>{{ week }}<span>周</span>
     </div>
-    <Popup v-model="showPicker" round position="bottom">
+    <VanPopup v-model="showPicker" round position="bottom">
       <Picker
         show-toolbar
         :title="term"
@@ -57,13 +57,12 @@
         @cancel="showPicker = false"
         @confirm="onPickerConfirm"
       />
-    </Popup>
+    </VanPopup>
   </div>
 </template>
 
 <script>
 // import calendarMock from 'assets/js/calendarMock'
-import { Row, Col, Picker, Popup } from 'vant'
 import dayjs from 'dayjs'
 
 const tiptopMap = {
@@ -159,7 +158,6 @@ function mergedMatrix(a, b) {
 
 export default {
   name: 'CourseCalender',
-  components: { Row, Col, Picker, Popup },
   // mixins: [calendarMock],
   props: {
     data: {
@@ -300,6 +298,17 @@ export default {
   },
   watch: {
     data(val) {
+      this.updateDataView(val)
+    },
+  },
+  mounted() {
+    this.updateDataView()
+  },
+  methods: {
+    updateDataView(val) {
+      if (!val) {
+        val = this.data
+      }
       val.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
         if (result) {
@@ -330,41 +339,10 @@ export default {
       )
       this.renderCalendar()
     },
-  },
-  methods: {
     onPickerConfirm(val) {
       this.week = parseInt(val)
       this.showPicker = false
       this.renderCalendar()
-    },
-    handleSelectChange(term) {
-      this.data = []
-      this.renderCalendar()
-      this.$axios({
-        url: `/${this.isStudent ? 'student' : 'teacher'}/courseCalendar`,
-        method: 'post',
-        data: {
-          term,
-        },
-      })
-        .then((res) => {
-          const { cid, cname, credit, classTime, tname } = res.data
-          if (!cid) {
-            return
-          }
-          for (let i = 0; i < cid.length; i++) {
-            this.data.push({
-              kcdm: cid[i],
-              kcmc: cname[i],
-              dgjsmc: tname[i],
-              xf: credit[i],
-              sksj: classTime[i],
-            })
-          }
-        })
-        .finally(() => {
-          this.renderCalendar()
-        })
     },
     renderCalendar({ raw = this.data, hover: { kcdm, sksj } = {} } = {}) {
       // raw是课程数组

@@ -7,12 +7,12 @@ export default {
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
    */
-  mode: 'spa',
+  mode: 'universal',
   /*
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
    */
-  target: 'static',
+  target: 'server',
   /*
    ** Headers of the page
    ** See https://nuxtjs.org/api/configuration-head
@@ -43,9 +43,11 @@ export default {
    ** https://nuxtjs.org/guide/plugins
    */
   plugins: [
-    '~/plugins/easytable.js',
-    '~/plugins/iview.js',
-    '~/plugins/axios.js',
+    { src: '~/plugins/easytable.js' },
+    { src: '~/plugins/iview.js' },
+    { src: '~/plugins/vant.js' },
+    { src: '~/plugins/axios.js' },
+    { src: '~/plugins/cookies.client.js' },
   ],
   /*
    ** Auto import components
@@ -90,4 +92,34 @@ export default {
    ** See https://nuxtjs.org/api/configuration-build/
    */
   build: {},
+  transpile: [/vant.*?less/],
+
+  babel: {
+    plugins: [
+      [
+        'import',
+        {
+          libraryName: 'vant',
+          libraryDirectory: 'es',
+          style: (name) => {
+            return `${name}/style/index.js`
+          },
+        },
+        'vant',
+      ],
+      [
+        'import',
+        {
+          libraryName: 'iview',
+          libraryDirectory: 'src/components',
+        },
+        'iview',
+      ],
+    ],
+  },
+  pwa: {
+    workbox: {
+      skipWaiting: true,
+    },
+  },
 }
