@@ -55,7 +55,9 @@ export default {
           const { data } = res
           if (data.code === 200) {
             this.$cookies.set('token', data.token)
-            this.$router.push('/')
+            this.$nextTick(() => {
+              this.$router.push('/')
+            })
           }
         })
         .catch(() => {

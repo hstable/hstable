@@ -2,7 +2,7 @@ package router
 
 import (
 	jwt "github.com/appleboy/gin-jwt/v2"
-    "github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
 	"service/config"
@@ -17,7 +17,7 @@ var identityKey = handler.IdentityKey
 func Router() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
-	corsConfig:=cors.DefaultConfig()
+	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
 	corsConfig.AllowAllOrigins = true
 	r.Use(cors.New(corsConfig))
