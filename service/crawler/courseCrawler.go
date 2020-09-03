@@ -89,7 +89,7 @@ func construct_params(params_json string) string {
 	params_str = strings.Replace(params_str, "}", "", -1)
 	params_str = strings.Replace(params_str, ",", "&", -1)
 	params_str = strings.Replace(params_str, ":", "=", -1)
-	fmt.Println("params_str: \n" + params_str)
+	//fmt.Println("params_str: \n" + params_str)
 	return params_str
 }
 
@@ -119,8 +119,8 @@ func storeData(account string, course_data model.Course) {
 	course_info, _ := json.Marshal(course_data)
 	_, err := mysql.SelectByXh(account)
 	if err != nil {
-		fmt.Println(account)
-		fmt.Println(string(course_info))
+		//fmt.Println(account)
+		//fmt.Println(string(course_info))
 		mysql.Insert(account, string(course_info))
 	} else {
 		mysql.UpdateByXh(account, string(course_info))
