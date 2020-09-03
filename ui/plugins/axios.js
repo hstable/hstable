@@ -6,11 +6,12 @@ export default function ({ $axios, redirect, req, app }) {
       // console.log(config.baseURL, config.url, process.browser)
       if (process.browser) {
         let token = ''
-        token = app.$cookies.token
+        token = app.$cookies.get('token')
+        // console.log('token', token)
         if (!token && !location.pathname.startsWith('/login')) {
           redirect('/login')
         }
-        config.headers.Authorization = `Bearer ${token}`
+        token && (config.headers.Authorization = `Bearer ${token}`)
       }
       return config
     },

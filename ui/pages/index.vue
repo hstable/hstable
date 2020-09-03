@@ -14,7 +14,7 @@
     >
       <client-only
         ><course-calender
-          v-if="courseCalendarData"
+          v-if="courseCalendarData && courseCalendarData.length"
           v-show="active === 0"
           :data="courseCalendarData"
         ></course-calender
@@ -89,11 +89,16 @@ import CourseCalender from '~/components/courseCalendar'
 // import { getFromCookie } from '~/assets/js/cookieTool'
 
 function getCourses(axios, Authorization) {
+  const headers = {}
+  if (Authorization) {
+    headers.Authorization = Authorization
+  }
   return axios({
     url: '/api/course',
-    headers: { Authorization },
+    headers,
   }).then((res) => {
     const { data } = res
+    // console.log('length', data.course.Course.yxkcList.length)
     return {
       courseCalendarData: data.course.Course.yxkcList,
       account: data.course.Student_number,
@@ -106,10 +111,13 @@ export default {
   components: {
     CourseCalender,
   },
-  async asyncData({ $axios, req, redirect }) {
+  async asyncData({ $axios, req }) {
     if (process.server && req) {
-      console.log(req.headers)
+      // console.log(req.headers)
       return await getCourses($axios, genAuth(req))
+    } else if (process.browser) {
+      // console.log(document.cookie)
+      return await getCourses($axios)
     }
     // 这里千万不能返回空{}，不然会再次进行更新
     // return {}

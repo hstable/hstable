@@ -302,7 +302,7 @@ export default {
     },
   },
   mounted() {
-    console.log(this.data.length)
+    // console.log(this.data.length)
     this.updateDataView()
   },
   methods: {
@@ -310,9 +310,10 @@ export default {
       if (!val) {
         val = this.data
       }
-      if (!val) {
+      if (!val || !val.length) {
         return
       }
+      // console.log(!val, !val.length)
       val.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
         if (result) {
