@@ -3,16 +3,17 @@ import { getFromCookie } from '../assets/js/cookieTool'
 export default function ({ $axios, redirect, req, app }) {
   $axios.interceptors.request.use(
     (config) => {
+      console.log(config.url, process.browser)
       let token = ''
       if (process.browser) {
         token = app.$cookies.token
         if (!token && !location.pathname.startsWith('/login')) {
           redirect('/login')
         }
-      } else {
+      } else if (req) {
         token = getFromCookie(req.headers.cookie, 'token')
       }
-      config.headers.Authorization = `Bearer ${token}`
+      token && (config.headers.Authorization = `Bearer ${token}`)
       return config
     },
     (err) => {

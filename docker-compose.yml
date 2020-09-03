@@ -7,6 +7,7 @@ services:
     build: ui/
     environment:
       API_URL_BROWSER: /
+      BASE_URL: http://service:8000
   service:
     ports:
       - 30002:8000
