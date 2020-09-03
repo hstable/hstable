@@ -14,6 +14,7 @@
     >
       <client-only
         ><course-calender
+          v-if="courseCalendarData"
           v-show="active === 0"
           :data="courseCalendarData"
         ></course-calender
@@ -83,12 +84,14 @@
 
 <script>
 import dayjs from 'dayjs'
+import { genAuth } from 'assets/js/cookieTool'
 import CourseCalender from '~/components/courseCalendar'
 // import { getFromCookie } from '~/assets/js/cookieTool'
 
-function getCourses(axios) {
+function getCourses(axios, Authorization) {
   return axios({
     url: '/api/course',
+    headers: { Authorization },
   }).then((res) => {
     const { data } = res
     return {
@@ -100,15 +103,16 @@ function getCourses(axios) {
 }
 
 export default {
-  // middleware: 'auth',
   components: {
     CourseCalender,
   },
   async asyncData({ $axios, req, redirect }) {
-    if (!process.browser) {
-      return await getCourses($axios)
+    if (process.server && req) {
+      console.log(req.headers)
+      return await getCourses($axios, genAuth(req))
     }
-    return {}
+    // 这里千万不能返回空{}，不然会再次进行更新
+    // return {}
   },
   data: () => ({
     active: 0,
@@ -120,7 +124,7 @@ export default {
   }),
   computed: {
     name() {
-      if (this.courseCalendarData.length) {
+      if (this.courseCalendarData && this.courseCalendarData.length) {
         return this.courseCalendarData[0].xm
       } else {
         return ''
@@ -129,7 +133,7 @@ export default {
   },
   methods: {
     handleLogout() {
-      document.token = ''
+      this.$cookies.remove('token')
       this.$router.push('/login')
     },
     handleSubmitSync() {

@@ -9,4 +9,9 @@ function getFromCookie(cookie, key) {
   return target.split('=')[1]
 }
 
-export { getFromCookie }
+function genAuth(req) {
+  const token = getFromCookie(req.headers.cookie, 'token')
+  return token ? `Bearer ${token}` : ''
+}
+
+export { getFromCookie, genAuth }
