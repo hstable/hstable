@@ -19,7 +19,13 @@ func Router() *gin.Engine {
 	r.Use(gin.Logger())
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
-	corsConfig.AllowAllOrigins = true
+	if gin.Mode() == gin.ReleaseMode {
+		corsConfig.AllowOrigins = []string{
+			"hstable.cn", "www.hstable.cn",
+		}
+	} else {
+		corsConfig.AllowAllOrigins = true
+	}
 	r.Use(cors.New(corsConfig))
 	r.Use(gin.Recovery())
 	g := r.Group("/api")
