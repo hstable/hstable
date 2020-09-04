@@ -24,7 +24,7 @@ func SelectByXh(student_number string) (model.StudentCourse, error) {
 	//if stu_course.Id == 0 {
 	//	fmt.Println("....................")
 	//}
-	fmt.Println("select result: ", stu_course)
+	//fmt.Println("select result: ", stu_course)
 	return stu_course, nil
 }
 func DeleteByXh(student_number string) {
