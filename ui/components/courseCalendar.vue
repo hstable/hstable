@@ -331,7 +331,7 @@ export default {
       document.querySelector(
         '.calendar .ivu-table-header .ivu-table-cell'
       ).style = 'color:transparent'
-      console.log(!val, !val.length)
+      // console.log(!val, !val.length)
       val.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
         if (result) {

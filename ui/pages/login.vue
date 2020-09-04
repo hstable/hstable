@@ -8,16 +8,18 @@
     </div>
     <van-form @submit="onSubmit">
       <field
+        id="username"
         v-model="username"
-        name="学号"
+        name="username"
         label="学号"
         placeholder="学号"
         :rules="[{ required: true, message: '请填写学号' }]"
       />
       <field
+        id="password"
         v-model="password"
         type="password"
-        name="密码"
+        name="password"
         label="密码"
         placeholder="密码"
         :rules="[{ required: true, message: '请填写密码' }]"
@@ -43,8 +45,30 @@ export default {
   data: () => ({
     username: '',
     password: '',
+    Username: null,
+    Password: null,
+    alignInterval: null,
   }),
+  mounted() {
+    this.Username = document.querySelector('#username')
+    this.Password = document.querySelector('#password')
+    // ugly but no choice
+    this.alignInterval = setInterval(this.checkAlign, 100)
+  },
+  beforeDestroy() {
+    clearInterval(this.alignInterval)
+  },
   methods: {
+    checkAlign() {
+      this.$nextTick(() => {
+        if (this.Username.value !== this.username) {
+          this.username = this.Username.value
+        }
+        if (this.Password.value !== this.password) {
+          this.password = this.Password.value
+        }
+      })
+    },
     onSubmit() {
       this.$axios({
         url: '/api/login',
@@ -86,6 +110,7 @@ export default {
 .login-wrapper {
   padding: 5vh 5vw 0;
 }
+
 .vice-info {
   font-size: 1.2em;
   margin: 10px 0;
