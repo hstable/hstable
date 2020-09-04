@@ -172,8 +172,17 @@ export default {
         {
           title: ' ',
           key: 'time',
-          width: 50,
+          width: 25,
           align: 'center',
+          render(h, params) {
+            return (
+              <div>
+                <p>{params.row.time}</p>
+                <p class="small-time">{params.row.timeFrom}</p>
+                <p class="small-time">{params.row.timeTo}</p>
+              </div>
+            )
+          },
         },
         {
           title: '周一',
@@ -262,18 +271,18 @@ export default {
       ],
       selected: '',
       calendar: [
-        { time: '1' },
-        { time: '2' },
-        { time: '3' },
-        { time: '4' },
-        { time: '5' },
-        { time: '6' },
-        { time: '7' },
-        { time: '8' },
-        { time: '9' },
-        { time: '10' },
-        { time: '11' },
-        { time: '12' },
+        { time: '1', timeFrom: '8:00', timeTo: '8:50' },
+        { time: '2', timeFrom: '8:55', timeTo: '9:45' },
+        { time: '3', timeFrom: '10:00', timeTo: '10:50' },
+        { time: '4', timeFrom: '10:55', timeTo: '11:45' },
+        { time: '5', timeFrom: '13:14', timeTo: '14:35' },
+        { time: '6', timeFrom: '14:40', timeTo: '15:30' },
+        { time: '7', timeFrom: '15:45', timeTo: '16:35' },
+        { time: '8', timeFrom: '16:40', timeTo: '17:30' },
+        { time: '9', timeFrom: '18:30', timeTo: '19:20' },
+        { time: '10', timeFrom: '19:25', timeTo: '20:15' },
+        { time: '11', timeFrom: '20:30', timeTo: '21:20' },
+        { time: '12', timeFrom: '21:25', timeTo: '22:15' },
       ],
       nodeMatrix: [],
       isStudent: false,
@@ -313,6 +322,10 @@ export default {
       if (!val || !val.length) {
         return
       }
+      // 时间style
+      document
+        .querySelectorAll('.ivu-table-row')
+        .forEach((x) => (x.firstChild.firstChild.style = 'padding:0'))
       // console.log(!val, !val.length)
       val.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
@@ -534,5 +547,8 @@ export default {
   border-radius: 50%;
   box-shadow: 0 0 5px 1px #ffb292;
   z-index: 10;
+}
+.small-time {
+  font-size: 8px;
 }
 </style>
