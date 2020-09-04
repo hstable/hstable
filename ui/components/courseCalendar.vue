@@ -172,7 +172,7 @@ export default {
         {
           title: ' ',
           key: 'time',
-          width: 25,
+          width: 35,
           align: 'center',
           render(h, params) {
             return (
@@ -324,8 +324,11 @@ export default {
       }
       // 时间style
       document
-        .querySelectorAll('.ivu-table-row')
+        .querySelectorAll('.calendar .ivu-table-row')
         .forEach((x) => (x.firstChild.firstChild.style = 'padding:0'))
+      document.querySelector(
+        '.calendar .ivu-table-header .ivu-table-cell'
+      ).style = 'padding:0'
       // console.log(!val, !val.length)
       val.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
