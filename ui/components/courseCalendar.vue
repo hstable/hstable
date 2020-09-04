@@ -170,7 +170,7 @@ export default {
     return {
       calendarColumns: [
         {
-          title: '',
+          title: ' ',
           key: 'time',
           width: 35,
           align: 'center',
@@ -187,37 +187,37 @@ export default {
           },
         },
         {
-          title: '周一',
+          title: '一',
           key: 1,
           align: 'center',
         },
         {
-          title: '周二',
+          title: '二',
           key: 2,
           align: 'center',
         },
         {
-          title: '周三',
+          title: '三',
           key: 3,
           align: 'center',
         },
         {
-          title: '周四',
+          title: '四',
           key: 4,
           align: 'center',
         },
         {
-          title: '周五',
+          title: '五',
           key: 5,
           align: 'center',
         },
         {
-          title: '周六',
+          title: '六',
           key: 6,
           align: 'center',
         },
         {
-          title: '周日',
+          title: '日',
           key: 7,
           align: 'center',
         },
@@ -324,14 +324,6 @@ export default {
       if (!val || !val.length) {
         return
       }
-      // 时间style
-      document
-        .querySelectorAll('.calendar .ivu-table-row')
-        .forEach((x) => (x.firstChild.className += ' float-cell'))
-      document.querySelector(
-        '.calendar .ivu-table-header .ivu-table-cell'
-      ).style = 'color:transparent'
-      // console.log(!val, !val.length)
       val.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
         if (result) {
@@ -572,5 +564,10 @@ export default {
 .flex-center {
   justify-content: center;
   align-items: center;
+}
+.ivu-table-cell {
+  margin: auto;
+  text-align: center;
+  padding: 0 !important;
 }
 </style>
