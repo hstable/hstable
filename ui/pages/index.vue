@@ -142,6 +142,7 @@ export default {
   methods: {
     handleLogout() {
       this.$cookies.remove('token')
+      localStorage.removeItem('token')
       this.$router.push('/login')
     },
     handleSubmitSync() {
