@@ -7,6 +7,10 @@ export default function ({ $axios, redirect, req, app }) {
       if (process.browser) {
         let token = ''
         token = app.$cookies.get('token')
+        // 备用存储地点
+        if (!token && localStorage.token) {
+          token = localStorage.token
+        }
         // console.log('token', token)
         if (!token && !location.pathname.startsWith('/login')) {
           redirect('/login')
