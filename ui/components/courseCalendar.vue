@@ -170,16 +170,18 @@ export default {
     return {
       calendarColumns: [
         {
-          title: ' ',
+          title: '',
           key: 'time',
           width: 35,
           align: 'center',
           render(h, params) {
             return (
-              <div>
-                <p>{params.row.time}</p>
-                <p class="small-time">{params.row.timeFrom}</p>
-                <p class="small-time">{params.row.timeTo}</p>
+              <div class="float-cell-body flex flex-center">
+                <div>
+                  <p>{params.row.time}</p>
+                  <p class="small-time">{params.row.timeFrom}</p>
+                  <p class="small-time">{params.row.timeTo}</p>
+                </div>
               </div>
             )
           },
@@ -275,7 +277,7 @@ export default {
         { time: '2', timeFrom: '8:55', timeTo: '9:45' },
         { time: '3', timeFrom: '10:00', timeTo: '10:50' },
         { time: '4', timeFrom: '10:55', timeTo: '11:45' },
-        { time: '5', timeFrom: '13:14', timeTo: '14:35' },
+        { time: '5', timeFrom: '13:45', timeTo: '14:35' },
         { time: '6', timeFrom: '14:40', timeTo: '15:30' },
         { time: '7', timeFrom: '15:45', timeTo: '16:35' },
         { time: '8', timeFrom: '16:40', timeTo: '17:30' },
@@ -325,11 +327,11 @@ export default {
       // 时间style
       document
         .querySelectorAll('.calendar .ivu-table-row')
-        .forEach((x) => (x.firstChild.firstChild.style = 'padding:0'))
+        .forEach((x) => (x.firstChild.className += ' float-cell'))
       document.querySelector(
         '.calendar .ivu-table-header .ivu-table-cell'
-      ).style = 'padding:0'
-      // console.log(!val, !val.length)
+      ).style = 'color:transparent'
+      console.log(!val, !val.length)
       val.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
         if (result) {
@@ -551,7 +553,24 @@ export default {
   box-shadow: 0 0 5px 1px #ffb292;
   z-index: 10;
 }
+.float-cell {
+  position: relative;
+  .float-cell-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
 .small-time {
   font-size: 8px;
+}
+.flex {
+  display: flex;
+}
+.flex-center {
+  justify-content: center;
+  align-items: center;
 }
 </style>
