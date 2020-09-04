@@ -21,7 +21,7 @@ func Router() *gin.Engine {
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
 	if gin.Mode() == gin.ReleaseMode {
 		corsConfig.AllowOrigins = []string{
-			"hstable.cn", "www.hstable.cn",
+			"https://hstable.cn", "https://www.hstable.cn",
 		}
 	} else {
 		corsConfig.AllowAllOrigins = true
@@ -33,7 +33,6 @@ func Router() *gin.Engine {
 
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "test zone",
 		Key:         []byte(conf.Key),
 		Timeout:     time.Hour * 24 * 30,
 		IdentityKey: identityKey,
