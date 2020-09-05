@@ -40,7 +40,7 @@ func get_lt(client *http.Client) string {
 	return lt
 }
 
-func Log_in(account string, password string) (model.Course, error) {
+func Log_in(account string, password string, forceUpdate bool) (model.Course, error) {
 	var client = new(http.Client)
 	client.Jar, _ = cookiejar.New(nil)
 	//params := model.PostParams{
@@ -80,7 +80,7 @@ func Log_in(account string, password string) (model.Course, error) {
 	}
 	//fmt.Println(string(body_str))
 	course_data := crawlerCourse(client)
-	storeData(account, course_data)
+	storeData(account, course_data, forceUpdate)
 	return course_data, nil
 }
 func construct_params(params_json string) string {
@@ -114,15 +114,16 @@ func crawlerCourse(client *http.Client) model.Course {
 	//fmt.Println(course_data.YxkcList[0])
 	return course_data
 }
-func storeData(account string, course_data model.Course) {
+
+func storeData(account string, course_data model.Course, force bool) {
 	// 存储到数据库
 	course_info, _ := json.Marshal(course_data)
-	_, err := mysql.SelectByXh(account)
+	v, err := mysql.SelectByXh(account)
 	if err != nil {
 		//fmt.Println(account)
 		//fmt.Println(string(course_info))
 		mysql.Insert(account, string(course_info))
-	} else {
+	} else if strings.TrimSpace(v.Course) == "" || force {
 		mysql.UpdateByXh(account, string(course_info))
 	}
 }

@@ -13,7 +13,7 @@ import (
 
 var IdentityKey = "account"
 
-func GetCourseByJW(c *gin.Context) {
+func PutCourseByJW(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	account := claims[IdentityKey]
 	var data struct {
@@ -24,7 +24,7 @@ func GetCourseByJW(c *gin.Context) {
 		c.JSON(401, gin.H{"message": "struct Error!!!"})
 		return
 	}
-	course_data, err := crawler.Log_in(account.(string), data.Password)
+	course_data, err := crawler.Log_in(account.(string), data.Password, true)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(401, gin.H{"message": "login Error!!!"})
