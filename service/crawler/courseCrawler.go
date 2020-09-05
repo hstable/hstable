@@ -80,7 +80,10 @@ func Log_in(account string, password string, forceUpdate bool) (model.Course, er
 	}
 	//fmt.Println(string(body_str))
 	course_data := crawlerCourse(client)
-	storeData(account, course_data, forceUpdate)
+	err = storeData(account, course_data, forceUpdate)
+	if err != nil {
+		return model.Course{}, err
+	}
 	return course_data, nil
 }
 func construct_params(params_json string) string {
@@ -115,17 +118,24 @@ func crawlerCourse(client *http.Client) model.Course {
 	return course_data
 }
 
-func storeData(account string, course_data model.Course, force bool) {
+func storeData(account string, course_data model.Course, force bool) error {
 	// 存储到数据库
 	course_info, _ := json.Marshal(course_data)
 	v, err := mysql.SelectByXh(account)
 	if err != nil {
 		//fmt.Println(account)
 		//fmt.Println(string(course_info))
+		if course_data.YxkcList == nil {
+			return errors.New("pulling course table failed")
+		}
 		mysql.Insert(account, string(course_info))
 	} else if strings.TrimSpace(v.Course) == "" ||
 		strings.TrimSpace(v.Course) == `{"yxkcList":null}` ||
 		force {
+		if course_data.YxkcList == nil {
+			return errors.New("pulling course table failed")
+		}
 		mysql.UpdateByXh(account, string(course_info))
 	}
+	return nil
 }
