@@ -102,7 +102,9 @@ function getCourses(axios, Authorization) {
     return {
       courseCalendarData: data.course.Course.yxkcList,
       account: data.course.Student_number,
-      latestUpdate: dayjs(data.course.Last_sync).format('YYYY-MM-DD HH:mm:ss'),
+      latestUpdate: dayjs(
+        dayjs(data.course.Last_sync).toDate().toLocaleString()
+      ).format('YYYY-MM-DD HH:mm:ss'),
     }
   })
 }
