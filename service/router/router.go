@@ -58,7 +58,7 @@ func Router() *gin.Engine {
 			userAccount := loginVals.Account
 			password := loginVals.Password
 			// Login crawler and store data
-			_, err := crawler.Log_in(userAccount, password)
+			_, err := crawler.Log_in(userAccount, password, false)
 			if err == nil { // login success
 				return &model.GotCourse{
 					Account: userAccount,
@@ -113,7 +113,7 @@ func Router() *gin.Engine {
 	auth := g.Group("")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
-		auth.PUT("/course", handler.GetCourseByJW)
+		auth.PUT("/course", handler.PutCourseByJW)
 		auth.GET("/course", handler.GetCourseByDB)
 	}
 	return r
