@@ -123,7 +123,9 @@ func storeData(account string, course_data model.Course, force bool) {
 		//fmt.Println(account)
 		//fmt.Println(string(course_info))
 		mysql.Insert(account, string(course_info))
-	} else if strings.TrimSpace(v.Course) == "" || force {
+	} else if strings.TrimSpace(v.Course) == "" ||
+		strings.TrimSpace(v.Course) == `{"yxkcList":null}` ||
+		force {
 		mysql.UpdateByXh(account, string(course_info))
 	}
 }
