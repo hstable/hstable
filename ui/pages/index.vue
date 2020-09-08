@@ -100,7 +100,10 @@ function getCourses(axios, Authorization) {
     const { data } = res
     // console.log('length', data.course.Course.yxkcList.length)
     return {
-      courseCalendarData: data.course.Course.yxkcList,
+      courseCalendarData: data.course.Course.yxkcList.map((x) => {
+        x.sksj = ''
+        return x
+      }),
       account: data.course.Student_number,
       latestUpdate: dayjs(data.course.Last_sync).format('YYYY-MM-DD HH:mm:ss'),
     }

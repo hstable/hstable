@@ -309,7 +309,7 @@ export default {
   },
   watch: {
     data(val) {
-      this.updateDataView(val)
+      this.updateDataView()
     },
   },
   mounted() {
@@ -317,14 +317,11 @@ export default {
     this.updateDataView()
   },
   methods: {
-    updateDataView(val) {
-      if (!val) {
-        val = this.data
-      }
-      if (!val || !val.length) {
+    updateDataView() {
+      if (!this.data || !this.data.length) {
         return
       }
-      val.forEach((x) => {
+      this.data.forEach((x) => {
         const result = x.kcxx.match(/<p>([^<]*?)<\/p>/g)
         if (result) {
           // result: ["<p>1-4,7-9周,星期四第5-6节 T6205</p>", "<p>6周,星期六第5-6节,T6205	1-5,7-9周,星期二第5-6节 T6205</p>"]
@@ -335,20 +332,24 @@ export default {
           })
           x.sksj = result
             .map((x) => x.substr('<p>'.length, x.length - '<p></p>'.length))
-            .join('\t')
+            .join(' | ')
         } else {
+          // console.log(x.kcxx)
           x.sksj = ''
         }
       })
       this.calendarHeight = document.body.clientHeight - 66
-      val.forEach((x) => {
+      this.data.forEach((x) => {
         if (x.ktxkjssj) {
           if (!this.termBeginTime || this.termBeginTime < dayjs(x.ktxkjssj)) {
             this.termBeginTime = dayjs(x.ktxkjssj)
           }
         }
       })
-      this.termBeginTime = this.termBeginTime.subtract(7, 'day')
+      console.log(Date.now() - this.termBeginTime)
+      // this.termBeginTime = this.termBeginTime.subtract(7, 'day')
+      // FIXME: 该时间暂时手动设定
+      this.termBeginTime = dayjs('2020-08-31')
       this.week = Math.trunc(
         dayjs(Date.now() - this.termBeginTime) / 1000 / 3600 / 24 / 7 + 1
       )
