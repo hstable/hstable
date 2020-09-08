@@ -128,8 +128,14 @@ function generateFromRow(sksj, setOnlyDurFrom = false, funcMap = null) {
     const weekFromTo = arrToInt(week.split('-'))
     // console.log(weekFromTo, whatDay, durFromTo)
     if (weekFromTo.length === 1) {
-      for (let i = durFromTo[0]; i <= durFromTo[1]; i++) {
-        matrix[weekFromTo[0]][whatDay][i] = timeRoom[1]
+      if (setOnlyDurFrom) {
+        matrix[weekFromTo[0]][whatDay][durFromTo[0]] =
+          (funcMap && funcMap(weekFromTo[0], whatDay, durFromTo)) || timeRoom[1]
+      } else {
+        for (let i = durFromTo[0]; i <= durFromTo[1]; i++) {
+          matrix[weekFromTo[0]][whatDay][i] =
+            (funcMap && funcMap(weekFromTo[0], whatDay, i)) || timeRoom[1]
+        }
       }
     } else {
       for (let i = weekFromTo[0]; i <= weekFromTo[1]; i++) {
