@@ -116,7 +116,7 @@ function arrToInt(arr) {
   return arr
 }
 
-function generateFromRow(sksj) {
+function generateFromRow(sksj, setOnlyDurFrom = false, funcMap = null) {
   const timeRoom = sksj.split(' ')
   const weeks = timeRoom[0].split('周')[0].split(',')
   const indexWhatDay = timeRoom[0].indexOf('星期')
@@ -133,9 +133,15 @@ function generateFromRow(sksj) {
       }
     } else {
       for (let i = weekFromTo[0]; i <= weekFromTo[1]; i++) {
-        for (let j = durFromTo[0]; j <= durFromTo[1]; j++) {
-          matrix[i][whatDay][j] = timeRoom[1]
-          // console.log(i, whatDay, j, timeRoom[1])
+        if (setOnlyDurFrom) {
+          matrix[i][whatDay][durFromTo[0]] =
+            (funcMap && funcMap(i, whatDay, durFromTo)) || timeRoom[1]
+        } else {
+          for (let j = durFromTo[0]; j <= durFromTo[1]; j++) {
+            matrix[i][whatDay][j] =
+              (funcMap && funcMap(i, whatDay, j)) || timeRoom[1]
+            // console.log(i, whatDay, j, timeRoom[1])
+          }
         }
       }
     }
@@ -346,7 +352,7 @@ export default {
           }
         }
       })
-      console.log(Date.now() - this.termBeginTime)
+      // console.log(Date.now() - this.termBeginTime)
       // this.termBeginTime = this.termBeginTime.subtract(7, 'day')
       // FIXME: 该时间暂时手动设定
       this.termBeginTime = dayjs('2020-08-31')
@@ -364,7 +370,8 @@ export default {
       // raw是课程数组
       // clear
       // matrix下标从0开始
-      const matrix = new Array(12)
+      // console.log(this.matrix)
+      let matrix = newMatrix()
       if (this.nodeMatrix.length) {
         for (let i = 0; i < this.nodeMatrix.length; i++) {
           for (let j = 0; j < this.nodeMatrix[j].length; j++) {
@@ -372,9 +379,6 @@ export default {
             this.nodeMatrix[i][j].style = ''
           }
         }
-      }
-      for (let i = 0; i < 12; i++) {
-        matrix[i] = new Array(7)
       }
       // 计算，并赋予颜色
       const colorArrayBak = Object.assign([], colorArray)
@@ -386,21 +390,13 @@ export default {
       let cnt = 0
       raw.forEach((obj, index) => {
         const x = Object.assign({}, obj)
-        let ct = x.sksj.split('\t')
+        let ct = x.sksj.split(' | ')
         // 每个不同的时间段
         if (!ct) {
           ct = [x.sksj]
         }
         ct = ct.filter((x) => !!x)
-        for (let j = 0; j < ct.length; j++) {
-          const indexWhatDay = ct[j].indexOf('星期')
-          const whatDay = tiptopMap[ct[j][indexWhatDay + '星期'.length]]
-          const timeArr = ct[j]
-            .substr(indexWhatDay)
-            .match(/\d+-\d+/g)[0]
-            .split('-')
-          const begin = parseInt(timeArr[0])
-          const end = parseInt(timeArr[1])
+        ct.forEach((r) => {
           // 给课程初始化一个颜色
           let color
           if (
@@ -421,12 +417,11 @@ export default {
           } else {
             color = 'rgba(0,0,0,.2)' // 灰色
           }
-          matrix[begin - 1][whatDay - 1] = {
-            ...obj,
-            color,
-            _length: end - begin + 1,
-          }
-        }
+          const mat = generateFromRow(r, true, (week, day, dur) => {
+            return { ...obj, color, _length: dur[1] - dur[0] + 1 }
+          })
+          matrix = mergedMatrix(matrix, mat)
+        })
       })
       // return
       // 开始渲染
@@ -444,29 +439,34 @@ export default {
         tr[i].onmouseenter = () => this.mouseEnterTr(i)
       }
 
-      for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[i].length; j++) {
-          if (!matrix[i][j]) {
+      for (let i = 1; i <= 7; i++) {
+        for (let j = 1; j <= MaxDurs; j++) {
+          if (!matrix[this.week][i][j]) {
             continue
           }
-          const room = this.matrix[this.week][j + 1][i + 1]
+          const room = this.matrix[this.week][i][j]
           if (!room) {
             continue
           }
-          this.nodeMatrix[i][j].style.position = 'relative'
-          this.nodeMatrix[i][j].firstChild.innerHTML = `
+          // console.log(i - 1, j - 1)
+          this.nodeMatrix[j - 1][i - 1].style.position = 'relative'
+          this.nodeMatrix[j - 1][i - 1].firstChild.innerHTML = `
               <div class="node" style="
-                height: ${matrix[i][j]._length}00%;
-                background-color: ${matrix[i][j].color};
+                height: ${matrix[this.week][i][j]._length}00%;
+                background-color: ${matrix[this.week][i][j].color};
               ">
                 <div>
-                  <p style="font-weight:bold">${matrix[i][j].kcmc}</p>
-                  <p style="font-weight:bold">[${matrix[i][j].dgjsmc}]</p>
+                  <p style="font-weight:bold">${
+                    matrix[this.week][i][j].kcmc
+                  }</p>
+                  <p style="font-weight:bold">[${
+                    matrix[this.week][i][j].dgjsmc
+                  }]</p>
                   <p style="font-weight:bold">@${room}</p>
                 </div>
               </div>
               `
-          this.nodeMatrix[i][j].style.color = 'white'
+          this.nodeMatrix[j - 1][i - 1].style.color = 'white'
         }
       }
     },

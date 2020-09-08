@@ -78,6 +78,13 @@ func Log_in(account string, password string, forceUpdate bool) (model.Course, er
 	if strings.Contains(body_str, "统一身份认证系统") {
 		return model.Course{}, errors.New("login error")
 	}
+	defer func() {
+		// logout
+		res, err := client.Get("http://jw.hitsz.edu.cn/logout")
+		if err == nil {
+			res.Body.Close()
+		}
+	}()
 	//fmt.Println(string(body_str))
 	course_data := crawlerCourse(client)
 	err = storeData(account, course_data, forceUpdate)
