@@ -78,8 +78,8 @@ export default {
         .then((res) => {
           const { data } = res
           if (data.code === 200) {
-            localStorage.token = data.token
-            this.$cookies.set('token', data.token, { expires: 30 })
+            localStorage.token = 'Bearer ' + data.token
+            this.$cookies.set('token', 'Bearer ' + data.token, { expires: 30 })
             // console.log(document.cookie)
             this.$nextTick(() => {
               // console.log(2, document.cookie)

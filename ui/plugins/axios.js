@@ -15,7 +15,7 @@ export default function ({ $axios, redirect, req, app }) {
         if (!token && !location.pathname.startsWith('/login')) {
           redirect('/login')
         }
-        token && (config.headers.Authorization = `Bearer ${token}`)
+        token && (config.headers.Authorization = token)
       }
       return config
     },
