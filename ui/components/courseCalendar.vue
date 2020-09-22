@@ -291,7 +291,7 @@ export default {
         { time: '4', timeFrom: '10:55', timeTo: '11:45' },
         { time: '5', timeFrom: '14:00', timeTo: '14:50' },
         { time: '6', timeFrom: '14:55', timeTo: '15:45' },
-        { time: '7', timeFrom: '14:00', timeTo: '16:50' },
+        { time: '7', timeFrom: '16:00', timeTo: '16:50' },
         { time: '8', timeFrom: '16:55', timeTo: '17:45' },
         { time: '9', timeFrom: '18:45', timeTo: '19:35' },
         { time: '10', timeFrom: '19:40', timeTo: '20:30' },
