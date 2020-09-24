@@ -4,6 +4,27 @@
   </div>
 </template>
 
+<script>
+import Cookies from 'js-cookie'
+
+export default {
+  beforeCreate() {
+    if (process.browser) {
+      let token = ''
+      token = Cookies.get('token')
+      // 备用存储地点
+      if (!token && localStorage.token) {
+        this.$Spin.show()
+        token = localStorage.token
+        Cookies.set('token', token, { expires: 30 })
+        this.$router.push('/')
+        this.$Spin.hide()
+      }
+    }
+  },
+}
+</script>
+
 <style>
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',

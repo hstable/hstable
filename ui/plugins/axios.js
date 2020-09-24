@@ -14,8 +14,10 @@ export default function ({ $axios, redirect, req, app }) {
         // console.log('token', token)
         if (!token && !location.pathname.startsWith('/login')) {
           redirect('/login')
+          localStorage.removeItem('token')
+          app.$cookies.remove('token')
         }
-        token && (config.headers.Authorization = token)
+        token && (config.headers.Authorization = `Bearer ${token}`)
       }
       return config
     },
