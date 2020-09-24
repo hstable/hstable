@@ -12,13 +12,13 @@
     <div
       style="padding-bottom: 75px; background-color: #f5f5f5; min-height: 100vh"
     >
-      <client-only
-        ><course-calender
+      <client-only>
+        <course-calender
           v-if="courseCalendarData && courseCalendarData.length"
           v-show="active === 0"
           :data="courseCalendarData"
-        ></course-calender
-      ></client-only>
+        ></course-calender>
+      </client-only>
       <div v-show="active === 1" style="padding: 25px 0 0">
         <div style="display: flex; justify-content: center">
           <van-image
@@ -86,6 +86,7 @@
 import dayjs from 'dayjs'
 import { genAuth } from 'assets/js/cookieTool'
 import CourseCalender from '~/components/courseCalendar'
+
 // import { getFromCookie } from '~/assets/js/cookieTool'
 
 function getCourses(axios, Authorization) {
@@ -149,6 +150,7 @@ export default {
       this.$router.push('/login')
     },
     handleSubmitSync() {
+      this.$Spin.show()
       this.$axios({
         url: '/api/course',
         method: 'put',
@@ -171,6 +173,9 @@ export default {
             type: 'warning',
             message: err.message,
           })
+        })
+        .finally(() => {
+          this.$Spin.hide()
         })
     },
   },
