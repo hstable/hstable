@@ -361,7 +361,7 @@ export default {
       // console.log(Date.now() - this.termBeginTime)
       // this.termBeginTime = this.termBeginTime.subtract(7, 'day')
       // FIXME: 该时间暂时手动设定
-      this.termBeginTime = dayjs('2020-08-31')
+      this.termBeginTime = dayjs('2021-02-22')
       this.week = Math.trunc(
         dayjs(Date.now() - this.termBeginTime) / 1000 / 3600 / 24 / 7 + 1
       )

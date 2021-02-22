@@ -16,7 +16,7 @@ import (
 	//"github.com/go-sql-driver/mysql"
 )
 
-var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/casLogin"
+var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/cas"
 var Course_URL = "http://jw.hitsz.edu.cn/Xsxk/queryYxkc"
 
 func get_lt(client *http.Client) string {
