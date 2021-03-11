@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -18,6 +19,8 @@ import (
 
 var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/cas"
 var Course_URL = "http://jw.hitsz.edu.cn/Xsxk/queryYxkc"
+var JW_Mirror = "https://yes.mzz.pub:7002"
+var Course_Mirror = "http://yes.mzz.pub:7003"
 
 func get_lt(client *http.Client) string {
 	var lt = ""
@@ -43,6 +46,34 @@ func get_lt(client *http.Client) string {
 func Log_in(account string, password string, forceUpdate bool) (model.Course, error) {
 	var client = new(http.Client)
 	client.Jar, _ = cookiejar.New(nil)
+	// set mirror trickily
+	client.Transport = &http.Transport{Dial: func(network string, addr string) (net.Conn, error) {
+		_, port, err := net.SplitHostPort(addr)
+		if err != nil {
+			return nil, err
+		}
+		var target string
+		// tricky
+		if port == "7002" {
+			addr = JW_Mirror
+		}else{
+			addr = Course_Mirror
+		}
+		u, err := url.Parse(target)
+		if err != nil {
+			panic(err)
+		}
+		ip := u.Hostname()
+		port = u.Port()
+		if port == "" {
+			if u.Scheme == "https" {
+				port = "443"
+			} else {
+				port = "80"
+			}
+		}
+		return net.Dial(network, net.JoinHostPort(ip, port))
+	}}
 	//params := model.PostParams{
 	//	Username:   account,
 	//	Password:   password,
