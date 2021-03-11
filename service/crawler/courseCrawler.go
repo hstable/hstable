@@ -55,9 +55,9 @@ func Log_in(account string, password string, forceUpdate bool) (model.Course, er
 		var target string
 		// tricky
 		if port == "7002" {
-			addr = JW_Mirror
+			target = JW_Mirror
 		}else{
-			addr = Course_Mirror
+			target = Course_Mirror
 		}
 		u, err := url.Parse(target)
 		if err != nil {
@@ -71,6 +71,13 @@ func Log_in(account string, password string, forceUpdate bool) (model.Course, er
 			} else {
 				port = "80"
 			}
+		}
+		if net.ParseIP(ip)==nil{
+			ips, err:=net.LookupHost(ip)
+			if err != nil {
+				return nil,err
+			}
+			ip = ips[0]
 		}
 		return net.Dial(network, net.JoinHostPort(ip, port))
 	}}
