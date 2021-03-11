@@ -1,11 +1,13 @@
 package crawler
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -19,18 +21,38 @@ import (
 var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/cas"
 var Course_URL = "http://jw.hitsz.edu.cn/Xsxk/queryYxkc"
 
-func get_lt(client *http.Client) string {
+func get_lt(client *http.Client) (string, error) {
 	var lt = ""
-	resp, err := client.Get(JW_URL)
+	u, err := url.Parse(JW_URL)
 	if err != nil {
-		log.Println(err)
+		return "", err
+	}
+	req := http.Request{
+		Method: "GET",
+		URL:    u,
+	}
+	ips, err := net.LookupHost("yes.mzz.pub")
+	if err != nil || len(ips) == 0 {
+		if err == nil {
+			err = fmt.Errorf("empty ip")
+		}
+		return "", err
+	}
+	conn, err := net.Dial("tcp", ips[0])
+	err = req.Write(conn)
+	if err != nil {
+		return "", err
+	}
+	resp, err := http.ReadResponse(bufio.NewReader(conn), &req)
+	if err != nil {
+		return "", err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("..............")
 		log.Println(err)
-		return "error"
+		return "", err
 	}
 	//fmt.Print("lalala: \n" + string(body))
 	//	提取校验码
@@ -53,11 +75,15 @@ func Log_in(account string, password string, forceUpdate bool) (model.Course, er
 	//	VcUsername: "",
 	//	VcPassword: "",
 	//}
+	lt, err := get_lt(client)
+	if err != nil {
+		return model.Course{}, err
+	}
 	params := url.Values{
 		"username":    {account},
 		"password":    {password},
 		"rememberMe":  {"off"},
-		"lt":          {get_lt(client)},
+		"lt":          {lt},
 		"execution":   {"e1s1"},
 		"_eventId":    {"submit"},
 		"vc_username": {""},
