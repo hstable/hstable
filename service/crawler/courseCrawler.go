@@ -61,7 +61,7 @@ func get_lt(client *http.Client) (string, error) {
 	//fmt.Println(string(body))
 	template := regexp.MustCompile(`<input.*?type="hidden".*?value="(.*?)".*?/>`)
 	lt = template.FindStringSubmatch(string(body))[1]
-	return lt
+	return lt, nil
 }
 
 func Log_in(account string, password string, forceUpdate bool) (model.Course, error) {
