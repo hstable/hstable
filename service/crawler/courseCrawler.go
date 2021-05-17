@@ -20,8 +20,8 @@ import (
 
 var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/cas"
 var Course_URL = "http://jw.hitsz.edu.cn/Xsxk/queryYxkc"
-var JW_Mirror = "https://yes.mzz.pub:7002"
-var Course_Mirror = "http://yes.mzz.pub:7003"
+var JW_Mirror = "https://mr.mzz.pub:7002"
+var Course_Mirror = "http://mr.mzz.pub:7003"
 
 func get_lt(client *http.Client) (string, error) {
 	var lt = ""
@@ -33,7 +33,7 @@ func get_lt(client *http.Client) (string, error) {
 		Method: "GET",
 		URL:    u,
 	}
-	ips, err := net.LookupHost("yes.mzz.pub")
+	ips, err := net.LookupHost("mr.mzz.pub")
 	if err != nil || len(ips) == 0 {
 		if err == nil {
 			err = fmt.Errorf("empty ip")
