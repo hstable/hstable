@@ -1,7 +1,6 @@
 package crawler
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -25,36 +24,16 @@ var Course_Mirror = "http://mr.mzz.pub:7003"
 
 func get_lt(client *http.Client) (string, error) {
 	var lt = ""
-	u, err := url.Parse(JW_URL)
+	resp, err := client.Get(JW_URL)
 	if err != nil {
-		return "", err
-	}
-	req := http.Request{
-		Method: "GET",
-		URL:    u,
-	}
-	ips, err := net.LookupHost("mr.mzz.pub")
-	if err != nil || len(ips) == 0 {
-		if err == nil {
-			err = fmt.Errorf("empty ip")
-		}
-		return "", err
-	}
-	conn, err := net.Dial("tcp", ips[0])
-	err = req.Write(conn)
-	if err != nil {
-		return "", err
-	}
-	resp, err := http.ReadResponse(bufio.NewReader(conn), &req)
-	if err != nil {
-		return "", err
+		log.Println(err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("..............")
 		log.Println(err)
-		return "", err
+		return "error", err
 	}
 	//fmt.Print("lalala: \n" + string(body))
 	//	提取校验码
@@ -77,7 +56,7 @@ func Log_in(account string, password string, forceUpdate bool) (model.Course, er
 		// tricky
 		if port == "7002" {
 			target = JW_Mirror
-		}else{
+		} else {
 			target = Course_Mirror
 		}
 		u, err := url.Parse(target)
@@ -93,10 +72,10 @@ func Log_in(account string, password string, forceUpdate bool) (model.Course, er
 				port = "80"
 			}
 		}
-		if net.ParseIP(ip)==nil{
-			ips, err:=net.LookupHost(ip)
+		if net.ParseIP(ip) == nil {
+			ips, err := net.LookupHost(ip)
 			if err != nil {
-				return nil,err
+				return nil, err
 			}
 			ip = ips[0]
 		}
