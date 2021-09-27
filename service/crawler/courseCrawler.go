@@ -1,7 +1,6 @@
 package crawler
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,51 +19,68 @@ import (
 
 var JW_URL = "https://sso.hitsz.edu.cn:7002/cas/login?service=http://jw.hitsz.edu.cn/cas"
 var Course_URL = "http://jw.hitsz.edu.cn/Xsxk/queryYxkc"
+var JW_Mirror = "https://mr.hstable.cn:7002"
+var Course_Mirror = "http://mr.hstable.cn:7003"
 
 func get_lt(client *http.Client) (string, error) {
 	var lt = ""
-	u, err := url.Parse(JW_URL)
+	resp, err := client.Get(JW_URL)
 	if err != nil {
-		return "", err
-	}
-	req := http.Request{
-		Method: "GET",
-		URL:    u,
-	}
-	ips, err := net.LookupHost("yes.mzz.pub")
-	if err != nil || len(ips) == 0 {
-		if err == nil {
-			err = fmt.Errorf("empty ip")
-		}
-		return "", err
-	}
-	conn, err := net.Dial("tcp", ips[0])
-	err = req.Write(conn)
-	if err != nil {
-		return "", err
-	}
-	resp, err := http.ReadResponse(bufio.NewReader(conn), &req)
-	if err != nil {
-		return "", err
+		log.Println(err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("..............")
 		log.Println(err)
-		return "", err
+		return "error", err
 	}
 	//fmt.Print("lalala: \n" + string(body))
 	//	提取校验码
 	//fmt.Println(string(body))
 	template := regexp.MustCompile(`<input.*?type="hidden".*?value="(.*?)".*?/>`)
 	lt = template.FindStringSubmatch(string(body))[1]
-	return lt
+	return lt, nil
 }
 
 func Log_in(account string, password string, forceUpdate bool) (model.Course, error) {
 	var client = new(http.Client)
 	client.Jar, _ = cookiejar.New(nil)
+	// set mirror trickily
+	client.Transport = &http.Transport{Dial: func(network string, addr string) (net.Conn, error) {
+		_, port, err := net.SplitHostPort(addr)
+		if err != nil {
+			return nil, err
+		}
+		var target string
+		// tricky
+		if port == "7002" {
+			target = JW_Mirror
+		} else {
+			target = Course_Mirror
+		}
+		u, err := url.Parse(target)
+		if err != nil {
+			panic(err)
+		}
+		ip := u.Hostname()
+		port = u.Port()
+		if port == "" {
+			if u.Scheme == "https" {
+				port = "443"
+			} else {
+				port = "80"
+			}
+		}
+		if net.ParseIP(ip) == nil {
+			ips, err := net.LookupHost(ip)
+			if err != nil {
+				return nil, err
+			}
+			ip = ips[0]
+		}
+		return net.Dial(network, net.JoinHostPort(ip, port))
+	}}
 	//params := model.PostParams{
 	//	Username:   account,
 	//	Password:   password,
