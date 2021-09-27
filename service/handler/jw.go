@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"service/crawler"
@@ -41,6 +42,7 @@ func GetCourseByDB(c *gin.Context) {
 	account := claims[IdentityKey]
 	course_data, err := mysql.SelectByXh(account.(string))
 	if err != nil {
+		log.Println(err)
 		c.JSON(400, err)
 		return
 	}
